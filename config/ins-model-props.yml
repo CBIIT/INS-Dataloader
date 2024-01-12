@@ -1,0 +1,288 @@
+PropDefinitions:
+  #properties of program:
+  program_id:
+    Desc: program id
+    Type: string
+    Req: true
+    Private: true
+  program_name:
+    Desc: program name
+    Type: string
+    Req: true
+    Private: false
+  program_acronym:
+    Desc: program acronym
+    Type: string
+    Req: false  # not always provided by ODS
+    Private: false
+  focus_area:
+    Desc: one of several focus areas, e.g., Moonshot, Clinical Networks, Pediatric/AYA, etc.
+    Type:
+      value_type: list
+      Enum:
+        - Cancer Center
+        - Cancer Moonshot
+        - Clinical Networks
+        - DCC
+        - HIV/AIDS
+        - Pediatric/AYA
+        - SPORE
+        - Health Disparities
+    Req: false  # not always provided by ODS
+    Private: false
+  doc:
+    Desc: division/office/center
+    Type:
+      value_type: list
+      Enum:
+        - CCG
+        - CIB
+        - CRCHD
+        - CTEP
+        - DCB
+        - DCCPS
+        - DCEG
+        - DCP
+        - DCTD
+        - NIH/OD
+        - OHAM
+    Req: true
+    Private: false
+  contact_pi:
+    Desc: principal investigator to contact
+    Type: string
+    Req: false  # not always provided by ODS
+    Private: false
+  contact_pi_email:
+    Desc: contact principal investigator email
+    Type: string
+    Req: false  # not always provided by ODS
+    Private: true  # not displayed
+  contact_nih:
+    Desc: nih contact, typically the program officer
+    Type: string
+    Req: false  # not always provided by ODS
+    Private: false
+  contact_nih_email:
+    Desc: nih contact email
+    Type: string
+    Req: false  # not always provided by ODS
+    Private: true  # not displayed
+  nofo:
+    Desc: list of notice of funding opportunities belonging to this program
+    Type: string  # list
+    Req: false  # not always provided by ODS
+    Private: false
+  award:
+    Desc: list of awards belonging to this program
+    Type: string  # list
+    Req: false  # not always provided by ODS
+    Private: true  # not displayed
+  program_link:
+    Desc: URL to the program page
+    Type: string
+    Req: false  # not always provided by ODS
+    Private: false
+  data_link:
+    Desc: URL to the program's data
+    Type: string
+    Req: false  # not always provided by ODS
+    Private: true  # not displayed
+  cancer_type:
+    Desc: main focus of program, e.g., bladder, brain, broadly cancer, etc.
+    Type:
+      value_type: list
+      Enum:
+        - Bladder Cancer
+        - Brain Cancer
+        - Breast Cancer
+        - Cervical Cancer
+        - Colorectal Cancer
+        - Esophageal Cancer
+        - Gastric Cancer
+        - Kidney Cancer
+        - Leukemia
+        - Multiple Myeloma
+        - Liver Cancer
+        - Lung Cancer
+        - Lymphoma
+        - Ovarian Cancer
+        - Pancreas Cancer
+        - Focus on Cancer Broadly
+        - Lymphoma
+        - Thyroid Cancer
+    Req: false  # not always provided by ODS
+    Private: false                  
+  #properties of grant:
+  grant_id: 
+    Desc: full id with leading numeral and suffix
+    Type: string
+    Req: true
+    Private: false
+  application_id:
+    Desc: application id
+    Type: string
+    Req: true
+    Private: true  # not displayed
+  fiscal_year:
+    Desc: fiscal year project_id was granted
+    Type: Int
+    Req: true
+    Private: false
+  grant_title:
+    Desc: grant title
+    Type: string
+    Req: true
+    Private: false
+  abstract_text:
+    Desc: project description text
+    Type: string
+    Req: true
+    Private: true  # not displayed
+  keywords:
+    Desc: project keywords
+    Type: string  # list
+    Req: true
+    Private: true  # not displayed
+  org_name:
+    Desc: organization of grantee
+    Type: string
+    Req: true
+    Private: true  # not displayed
+  org_city:
+    Desc: organization city
+    Type: string
+    Req: true
+    Private: true  # not displayed
+  org_state:
+    Desc: organization state
+    Type: string
+    Req: true
+    Private: true  # not displayed
+  org_country:
+    Desc: organization country
+    Type: string
+    Req: true
+    Private: true  # not displayed
+  principal_investigators:
+    Desc: list of principal investigators
+    Type: string  # list
+    Req: true
+    Private: false
+  program_officers:
+    Desc: program officer(s)
+    Type: string
+    Req: true
+    Private: false
+  award_amount:
+    Desc: total award money granted
+    Type: Int
+    Req: true
+    Private: true  # not displayed
+  nci_funded_amount:
+    Desc: portion of award funded by NCI
+    Type: Int
+    Req: true
+    Private: true  # not displayed
+  award_notice_date:
+    Desc: date grant was awarded
+    Type: Date
+    Req: true
+    Private: true  # not displayed
+  project_start_date:
+    Desc: project start date (of core project)
+    Type: Date
+    Req: true
+    Private: true  # not displayed
+  project_end_date:
+    Desc: project end date (of core project)
+    Type: Date
+    Req: true
+    Private: false
+  opportunity_number:
+    Desc: specific nofo of this grant
+    Type: string
+    Req: true
+    Private: true  # not displayed
+  #properties of project:
+  project_id:
+    Desc: core id (no leading numeral or suffix)
+    Type: string
+    Req: true
+    Private: false
+  project_title:
+    Desc: project title
+    Type: string
+    Req: true
+    Private: false
+  abstract_text:
+    Desc: project description
+    Type: string
+    Req: true
+    Private: false
+  org_name:
+    Desc: organization of grantee
+    Type: string
+    Req: true
+    Private: false
+  org_city:
+    Desc: organization city
+    Type: string
+    Req: true
+    Private: true  # not displayed
+  org_state:
+    Desc: organization state
+    Type: string
+    Req: true
+    Private: true  # not displayed
+  org_country:
+    Desc: organization country
+    Type: string
+    Req: true
+    Private: true  # not displayed
+  project_start_date:
+    Desc: project start date (of core project)
+    Type: Date
+    Req: true
+    Private: false
+  project_end_date:
+    Desc: project end date (of core project)
+    Type: Date
+    Req: true
+    Private: false
+  opportunity_number:
+    Desc: specific nofo of this project
+    Type: string  # list 
+    Req: true
+    Private: false
+  #properties of publication:
+  pmid:
+    Desc: PubMed ID
+    Type: string
+    Req: true
+    Private: false
+  title:
+    Desc: publication title
+    Type: string
+    Req: true
+    Private: false
+  authors:
+    Desc: publication authors
+    Type: string  # list
+    Req: true
+    Private: false
+  publication_date:
+    Desc: publication date
+    Type: Date
+    Req: true
+    Private: false
+  cited_by:
+    Desc: number of citations 
+    Type: Int
+    Req: false
+    Private: false
+  relative_citation_ratio:
+    Desc: relative citation ratio (RCR)
+    Type: Float
+    Req: false
+    Private: false  

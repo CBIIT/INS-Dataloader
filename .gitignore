@@ -14,4 +14,6 @@ config/es_loader_*
 backup/
 .vscode/
 **.DS_Store
-
+data
+config/config.yml
+config/es_loader.yml

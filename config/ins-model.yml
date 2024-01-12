@@ -1,0 +1,76 @@
+Nodes:
+  program:
+    Props:
+      - program_id
+      - program_name
+      - program_acronym
+      - focus_area
+      - doc
+      - contact_pi
+      - contact_pi_email  # not displayed
+      - contact_nih
+      - contact_nih_email  # not displayed
+      - nofo
+      - award
+      - program_link
+      - data_link  # not displayed
+      - cancer_type
+  grant:
+    Props:
+      - grant_id  # this has the leading numeral and suffix
+      - application_id  # not displayed
+      - fiscal_year
+      - grant_title
+      - abstract_text  # not displayed
+      - keywords  # not displayed
+      - principal_investigators
+      - program_officers
+      - award_amount  # not displayed
+      - nci_funded_amount  # not displayed
+      - award_notice_date  # not displayed
+      - project_start_date  # not displayed
+      - project_end_date
+      - opportunity_number  # not displayed
+      - org_name  # not displayed
+      - org_city  # not displayed
+      - org_state  # not displayed
+      - org_country  # not displayed
+  project:
+    Props:
+      - project_id
+      - project_title
+      - abstract_text
+      - project_start_date
+      - project_end_date
+      - opportunity_number
+      - org_name
+      - org_city  # not displayed
+      - org_state  # not displayed
+      - org_country  # not displayed
+  publication:
+    Props:
+      - pmid
+      - title
+      - authors
+      - publication_date  # year can be derived from here for donut chart publications by year
+      - cited_by  # before was citation_count
+      - relative_citation_ratio
+Relationships:
+  has_publication:
+    Mul: many_to_many
+    Ends:
+      - Src: publication
+        Dst: project
+    Props: null
+  grants_of_project:
+    Mul: many_to_one
+    Ends:
+      - Src: grant
+        Dst: project
+    Props: null
+  projects_of_program:
+    Mul: many_to_many
+    Ends:
+      - Src: project
+        Dst: program
+    Props: null
