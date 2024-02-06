@@ -1,6 +1,22 @@
 # Datamodel commit 9f16446
 
 Indices:
+  # Global search
+  - index_name: ins_static_pages
+    type: about_file
+    mapping:
+      page:
+        type: search_as_you_type
+      title:
+        type: search_as_you_type
+      primaryContentImage:
+        type: text
+      content:
+        type: object
+
+  # Should we only count connected nodes?
+  # This doesn't count all programs
+  #   Compare to `MATCH (pg:program) RETURN COUNT(pg);`
   - index_name: home_stats
     type: neo4j
     mapping:
@@ -22,3 +38,385 @@ Indices:
         COUNT(DISTINCT pg) AS num_programs,
         COUNT(DISTINCT pj) AS num_projects,
         COUNT(DISTINCT pb) AS num_publications;
+
+  # Programs are many-to-many with Projects
+  - index_name: programs
+    type: neo4j
+    mapping:
+      program_id:
+        type: keyword
+      program_name:
+        type: keyword
+      program_acronym:
+        type: keyword
+      focus_area: # list
+        type: keyword
+      focus_area_str:
+        type: keyword
+      doc:
+        type: keyword
+      contact_pi:
+        type: keyword
+      contact_pi_email:
+        type: keyword
+      contact_nih:
+        type: keyword
+      contact_nih_email:
+        type: keyword
+      nofo: # list
+        type: keyword
+      nofo_str:
+        type: keyword
+      award: # list
+        type: keyword
+      award_str:
+        type: keyword
+      program_link:
+        type: keyword
+      data_link:
+        type: keyword
+      # Projects
+      projects:
+        type: nested
+        properties:
+          project_id:
+            type: keyword
+          project_title:
+            type: keyword
+          abstract_text:
+            type: keyword
+          project_start_date:
+            type: date
+          project_end_date:
+            type: date
+          opportunity_number:
+            type: keyword
+          opportunity_number_str:
+            type: keyword
+          org_name:
+            type: keyword
+          org_city:
+            type: keyword
+          org_state:
+            type: keyword
+          org_country:
+            type: keyword
+      # Grants
+      grants:
+        type: nested
+        properties:
+          grant_id:
+            type: keyword
+          application_id:
+            type: keyword
+          fiscal_year:
+            type: integer
+          grant_title:
+            type: keyword
+          abstract_text:
+            type: keyword
+          keywords: # list
+            type: keyword
+          keywords_str:
+            type: keyword
+          principal_investigators:
+            type: keyword
+          program_officers:
+            type: keyword
+          award_amount:
+            type: integer
+          nci_funded_amount:
+            type: integer
+          award_notice_date:
+            type: date
+          project_start_date:
+            type: date
+          project_end_date:
+            type: date
+          opportunity_number:
+            type: keyword
+          opportunity_number_str:
+            type: keyword
+          org_name:
+            type: keyword
+          org_city:
+            type: keyword
+          org_state:
+            type: keyword
+          org_country:
+            type: keyword
+      # Publications
+      publications:
+        type: nested
+        properties:
+          pmid:
+            type: keyword
+          title:
+            type: keyword
+          authors: # list
+            type: keyword
+          authors_str:
+            type: keyword
+          publication_date:
+            type: date
+          cited_by:
+            type: integer
+          relative_citation_ratio:
+            type: float
+    cypher_query: >
+      MATCH (pg:program)<-[:projects_of_program]-(pj:project),
+        (pj)<-[:grants_of_project]-(g:grant),
+        (pj)<-[:has_publication]-(pb:publication
+      RETURN
+        pg.program_id AS program_id,
+        pg.program_name AS program_name,
+        pg.program_acronym AS program_acronym,
+        apoc.text.split(pg.focus_area, ';') AS focus_area,
+        pg.focus_area AS focus_area_str,
+        pg.doc AS doc,
+        pg.contact_pi AS contact_pi,
+        pg.contact_pi_email AS contact_pi_email,
+        pg.contact_nih AS contact_nih,
+        pg.contact_nih_email AS contact_nih_email,
+        apoc.text.split(pg.nofo, ';') AS nofo,
+        pg.nofo AS nofo_str,
+        apoc.text.split(pg.award, ';') AS award,
+        pg.award AS award_str,
+        pg.program_link AS program_link,
+        pg.data_link AS data_link,
+        COLLECT(DISTINCT {
+          project_id: pj.project_id,
+          project_title: pj.project_title,
+          abstract_text: pj.abstract_text,
+          project_start_date: pj.project_start_date,
+          project_end_date: pj.project_end_date,
+          opportunity_number: apoc.text.split(pj.opportunity_number, ';'),
+          opportunity_number_str: pj.opportunity_number,
+          org_name: pj.org_name,
+          org_city: pj.org_city,
+          org_state: pj.org_state,
+          org_country:pj.org_country
+        }) AS projects,
+        COLLECT(DISTINCT {
+          grant_id: g.grant_id,
+          application_id: g.application_id,
+          fiscal_year: g.fiscal_year,
+          grant_title: g.grant_title,
+          abstract_text: g.abstract_text,
+          keywords: apoc.text.split(g.keywords, ';'),
+          keywords_str: g.keywords,
+          principal_investigators: apoc.text.split(g.principal_investigators, ';'),
+          principal_investigators_str: g.principal_investigators,
+          program_officers: g.program_officers,
+          award_amount: g.award_amount,
+          nci_funded_amount: g.nci_funded_amount,
+          award_notice_date: g.award_notice_date,
+          project_start_date: g.project_start_date,
+          project_end_date: g.project_end_date,
+          opportunity_number: apoc.text.split(g.opportunity_number, ';'),
+          opportunity_number_str: g.opportunity_number,
+          org_name: g.org_name,
+          org_city: g.org_city,
+          org_state: g.org_state,
+          org_country: g.org_country
+        }) AS grants,
+        COLLECT(DISTINCT {
+          pmid: pb.pmid,
+          title: pb.title,
+          authors: apoc.text.split(pb.authors, ';'),
+          authors_str: pb.authors,
+          publication_date: pb.publication_date,
+          cited_by: pb.cited_by,
+          relative_citation_ratio: pb.relative_citation_ratio
+        }) AS publications;
+
+  # Projects are many-to-many with Programs
+  - index_name: projects
+    type: neo4j
+    mapping:
+      project_id:
+        type: keyword
+      project_title:
+        type: keyword
+      abstract_text:
+        type: keyword
+      project_start_date:
+        type: date
+      project_end_date:
+        type: date
+      opportunity_number:
+        type: keyword
+      opportunity_number_str:
+        type: keyword
+      org_name:
+        type: keyword
+      org_city:
+        type: keyword
+      org_state:
+        type: keyword
+      org_country:
+        type: keyword
+      # Programs
+      programs:
+        type: nested
+        properties:
+          program_id:
+            type: keyword
+          program_name:
+            type: keyword
+          program_acronym:
+            type: keyword
+          focus_area: # list
+            type: keyword
+          focus_area_str:
+            type: keyword
+          doc:
+            type: keyword
+          contact_pi:
+            type: keyword
+          contact_pi_email:
+            type: keyword
+          contact_nih:
+            type: keyword
+          contact_nih_email:
+            type: keyword
+          nofo: # list
+            type: keyword
+          nofo_str:
+            type: keyword
+          award: # list
+            type: keyword
+          award_str:
+            type: keyword
+          program_link:
+            type: keyword
+          data_link:
+            type: keyword
+      # Grants
+      grants:
+        type: nested
+        properties:
+          grant_id:
+            type: keyword
+          application_id:
+            type: keyword
+          fiscal_year:
+            type: integer
+          grant_title:
+            type: keyword
+          abstract_text:
+            type: keyword
+          keywords: # list
+            type: keyword
+          keywords_str:
+            type: keyword
+          principal_investigators:
+            type: keyword
+          program_officers:
+            type: keyword
+          award_amount:
+            type: integer
+          nci_funded_amount:
+            type: integer
+          award_notice_date:
+            type: date
+          project_start_date:
+            type: date
+          project_end_date:
+            type: date
+          opportunity_number:
+            type: keyword
+          opportunity_number_str:
+            type: keyword
+          org_name:
+            type: keyword
+          org_city:
+            type: keyword
+          org_state:
+            type: keyword
+          org_country:
+            type: keyword
+      # Publications
+      publications:
+        type: nested
+        properties:
+          pmid:
+            type: keyword
+          title:
+            type: keyword
+          authors: # list
+            type: keyword
+          authors_str:
+            type: keyword
+          publication_date:
+            type: date
+          cited_by:
+            type: integer
+          relative_citation_ratio:
+            type: float
+    cypher_query: >
+      MATCH (pj:project)
+      OPTIONAL MATCH (pj)<--(pg:program)
+      OPTIONAL MATCH (pb:publication)(pj)<--(g:grant)
+      RETURN
+        pg.program_id AS program_id,
+        pg.program_name AS program_name,
+        pg.program_acronym AS program_acronym,
+        apoc.text.split(pg.focus_area, ';') AS focus_area,
+        pg.focus_area AS focus_area_str,
+        pg.doc AS doc,
+        pg.contact_pi AS contact_pi,
+        pg.contact_pi_email AS contact_pi_email,
+        pg.contact_nih AS contact_nih,
+        pg.contact_nih_email AS contact_nih_email,
+        apoc.text.split(pg.nofo, ';') AS nofo,
+        pg.nofo AS nofo_str,
+        apoc.text.split(pg.award, ';') AS award,
+        pg.award AS award_str,
+        pg.program_link AS program_link,
+        pg.data_link AS data_link,
+        COLLECT(DISTINCT {
+          project_id: pj.project_id,
+          project_title: pj.project_title,
+          abstract_text: pj.abstract_text,
+          project_start_date: pj.project_start_date,
+          project_end_date: pj.project_end_date,
+          opportunity_number: apoc.text.split(pj.opportunity_number, ';'),
+          opportunity_number_str: pj.opportunity_number,
+          org_name: pj.org_name,
+          org_city: pj.org_city,
+          org_state: pj.org_state,
+          org_country:pj.org_country
+        }) AS projects,
+        COLLECT(DISTINCT {
+          grant_id: g.grant_id,
+          application_id: g.application_id,
+          fiscal_year: g.fiscal_year,
+          grant_title: g.grant_title,
+          abstract_text: g.abstract_text,
+          keywords: apoc.text.split(g.keywords, ';'),
+          keywords_str: g.keywords,
+          principal_investigators: apoc.text.split(g.principal_investigators, ';'),
+          principal_investigators_str: g.principal_investigators,
+          program_officers: g.program_officers,
+          award_amount: g.award_amount,
+          nci_funded_amount: g.nci_funded_amount,
+          award_notice_date: g.award_notice_date,
+          project_start_date: g.project_start_date,
+          project_end_date: g.project_end_date,
+          opportunity_number: apoc.text.split(g.opportunity_number, ';'),
+          opportunity_number_str: g.opportunity_number,
+          org_name: g.org_name,
+          org_city: g.org_city,
+          org_state: g.org_state,
+          org_country: g.org_country
+        }) AS grants,
+        COLLECT(DISTINCT {
+          pmid: pb.pmid,
+          title: pb.title,
+          authors: apoc.text.split(pb.authors, ';'),
+          authors_str: pb.authors,
+          publication_date: pb.publication_date,
+          cited_by: pb.cited_by,
+          relative_citation_ratio: pb.relative_citation_ratio
+        }) AS publications;
