@@ -1,3 +1,5 @@
+# Datamodel commit 9f16446
+
 Indices:
   - index_name: home_stats
     type: neo4j
