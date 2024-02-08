@@ -1,0 +1,24 @@
+# Datamodel commit 9f16446
+
+Indices:
+  - index_name: home_stats
+    type: neo4j
+    mapping:
+      num_grants:
+        type: integer
+      num_programs:
+        type: integer
+      num_projects:
+        type: integer
+      num_publications:
+        type: integer
+    cypher_query: >
+      MATCH (pg:program)
+        OPTIONAL MATCH (pj:project)-->(pg)
+        OPTIONAL MATCH (g:grant)-->(pj)
+        OPTIONAL MATCH (pb:publication)-->(pj)
+      RETURN
+        COUNT(DISTINCT g) AS num_grants,
+        COUNT(DISTINCT pg) AS num_programs,
+        COUNT(DISTINCT pj) AS num_projects,
+        COUNT(DISTINCT pb) AS num_publications;

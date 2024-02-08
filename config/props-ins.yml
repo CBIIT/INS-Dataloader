@@ -23,4 +23,4 @@ Properties:
     program: program_id
     project: project_id
     grant: grant_id
-    publication: publication_id
+    publication: pmid

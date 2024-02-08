@@ -21,3 +21,7 @@ The NCI ICDC/CTDC Data Loader includes multiple data loading modules:
 -   **Model Converter**
     -   The Model Converter uses a combination of YAML format schema files, a YAML formatted properties files, and a GraphQL formatted queries file to generate a GraphQL formatted schema.
     -   [Model Converter Documentation](docs/model-converter.md)
+
+## Prerequisites
+
+Neo4j needs the APOC plugin.
