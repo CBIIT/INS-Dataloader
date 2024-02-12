@@ -27,9 +27,9 @@ Indices:
         type: integer
     cypher_query: >
       MATCH (pg:program)
-        OPTIONAL MATCH (pj:project)-->(pg)
-        OPTIONAL MATCH (g:grant)-->(pj)
-        OPTIONAL MATCH (pb:publication)-->(pj)
+        OPTIONAL MATCH (pj:project)-[:projects_of_program]->(pg)
+        OPTIONAL MATCH (g:grant)-[:grants_of_project]->(pj)
+        OPTIONAL MATCH (pb:publication)-[:has_publication]->(pj)
       RETURN
         COUNT(DISTINCT g) AS num_grants,
         COUNT(DISTINCT pg) AS num_programs,
@@ -73,9 +73,7 @@ Indices:
       data_link:
         type: keyword
     cypher_query: >
-      MATCH (pg:program)<-[:projects_of_program]-(pj:project),
-        (pj)<-[:grants_of_project]-(g:grant),
-        (pj)<-[:has_publication]-(pb:publication)
+      MATCH (pg:program)
       RETURN
         pg.program_id AS program_id,
         pg.program_name AS program_name,
@@ -129,9 +127,7 @@ Indices:
           program_name:
             type: keyword
     cypher_query: >
-      MATCH (pg:program)<-[:projects_of_program]-(pj:project),
-        (pj)<-[:grants_of_project]-(g:grant),
-        (pj)<-[:has_publication]-(pb:publication)
+      MATCH (pg:program)<-[:projects_of_program]-(pj:project)
       RETURN
         pj.project_id AS project_id,
         pj.project_title AS project_title,
@@ -146,5 +142,5 @@ Indices:
         pj.org_country AS org_country,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
-          program_name: pg.program_name,
+          program_name: pg.program_name
         })) AS programs;
