@@ -25,6 +25,7 @@ Indices:
         type: integer
       num_publications:
         type: integer
+    # Using OPTIONAL MATCH so that we get all Programs
     cypher_query: >
       MATCH (pg:program)
         OPTIONAL MATCH (pj:project)-[:projects_of_program]->(pg)
@@ -84,10 +85,11 @@ Indices:
             type: keyword
           program_name:
             type: keyword
+    # Avoiding OPTIONAL MATCH so that we don't get null grants
     cypher_query: >
-      MATCH (pg:program)
-        OPTIONAL MATCH (pj:project)-[:projects_of_program]->(pg)
-        OPTIONAL MATCH (g:grant)-[:grants_of_project]->(pj)
+      MATCH (pg:program),
+        (pj:project)-[:projects_of_program]->(pg),
+        (g:grant)-[:grants_of_project]->(pj)
       RETURN
         g.grant_id AS grant_id,
         g.application_id AS application_id,
@@ -200,6 +202,7 @@ Indices:
             type: keyword
           program_name:
             type: keyword
+    # Avoiding OPTIONAL MATCH so that we don't get null projects
     cypher_query: >
       MATCH (pg:program)<-[:projects_of_program]-(pj:project)
       RETURN
@@ -242,10 +245,11 @@ Indices:
             type: keyword
           program_name:
             type: keyword
+    # Avoiding OPTIONAL MATCH so that we don't get null publications
     cypher_query: >
-      MATCH (pg:program)
-        OPTIONAL MATCH (pj:project)-[:projects_of_program]->(pg)
-        OPTIONAL MATCH (pb:publication)-[:has_publication]->(pj)
+      MATCH (pg:program),
+        (pj:project)-[:projects_of_program]->(pg),
+        (pb:publication)-[:has_publication]->(pj)
       RETURN
         pb.pmid AS pmid,
         pb.title AS title,
