@@ -67,7 +67,7 @@ Indices:
       project_end_date:
         type: date
       opportunity_number:
-        type: integer
+        type: keyword
       org_name:
         type: keyword
       org_city:
@@ -99,9 +99,9 @@ Indices:
         g.program_officers AS program_officers,
         g.award_amount AS award_amount,
         g.nci_funded_amount AS nci_funded_amount,
-        g.award_notice_date AS award_notice_date,
-        g.project_start_date AS project_start_date,
-        g.project_end_date AS project_end_date,
+        (CASE g.award_notice_date WHEN '' THEN NULL ELSE g.award_notice_date END) AS award_notice_date,
+        (CASE g.project_start_date WHEN '' THEN NULL ELSE g.project_start_date END) AS project_start_date,
+        (CASE g.project_end_date WHEN '' THEN NULL ELSE g.project_end_date END) AS project_end_date,
         g.opportunity_number AS opportunity_number,
         g.org_name AS org_name,
         g.org_city AS org_city,
@@ -184,8 +184,6 @@ Indices:
         type: date
       opportunity_number:
         type: keyword
-      opportunity_number_str:
-        type: keyword
       org_name:
         type: keyword
       org_city:
@@ -208,10 +206,9 @@ Indices:
         pj.project_id AS project_id,
         pj.project_title AS project_title,
         pj.abstract_text AS abstract_text,
-        pj.project_start_date AS project_start_date,
-        pj.project_end_date AS project_end_date,
+        (CASE pj.project_start_date WHEN '' THEN NULL ELSE pj.project_start_date END) AS project_start_date,
+        (CASE pj.project_end_date WHEN '' THEN NULL ELSE pj.project_end_date END) AS project_end_date,
         pj.opportunity_number AS opportunity_number,
-        pj.opportunity_number_str AS opportunity_number_str,
         pj.org_name AS org_name,
         pj.org_city AS org_city,
         pj.org_state AS org_state,
@@ -253,7 +250,7 @@ Indices:
         pb.pmid AS pmid,
         pb.title AS title,
         pb.authors AS authors,
-        pb.publication_date AS publication_date,
+        (CASE pb.publication_date WHEN '' THEN NULL ELSE pb.publication_date END) AS publication_date,
         pb.cited_by AS cited_by,
         pb.relative_citation_ration AS relative_citation_ratio,
         COLLECT(DISTINCT({
