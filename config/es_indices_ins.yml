@@ -1,6 +1,19 @@
 # Datamodel commit 9f16446
 
 Indices:
+  # Global search
+  - index_name: ins_static_pages
+    type: about_file
+    mapping:
+      page:
+        type: search_as_you_type
+      title:
+        type: search_as_you_type
+      primaryContentImage:
+        type: text
+      content:
+        type: object
+
   - index_name: home_stats
     type: neo4j
     mapping:
@@ -12,13 +25,239 @@ Indices:
         type: integer
       num_publications:
         type: integer
+    # Using OPTIONAL MATCH so that we get all Programs
     cypher_query: >
       MATCH (pg:program)
-        OPTIONAL MATCH (pj:project)-->(pg)
-        OPTIONAL MATCH (g:grant)-->(pj)
-        OPTIONAL MATCH (pb:publication)-->(pj)
+        OPTIONAL MATCH (pj:project)-[:projects_of_program]->(pg)
+        OPTIONAL MATCH (g:grant)-[:grants_of_project]->(pj)
+        OPTIONAL MATCH (pb:publication)-[:has_publication]->(pj)
       RETURN
         COUNT(DISTINCT g) AS num_grants,
         COUNT(DISTINCT pg) AS num_programs,
         COUNT(DISTINCT pj) AS num_projects,
         COUNT(DISTINCT pb) AS num_publications;
+
+  # Grants are connected to Programs through Projects
+  - index_name: grants
+    type: neo4j
+    mapping:
+      grant_id:
+        type: keyword
+      application_id:
+        type: keyword
+      fiscal_year:
+        type: integer
+      grant_title:
+        type: keyword
+      abstract_text:
+        type: keyword
+      keywords: # list
+        type: keyword
+      principal_investigators: # list
+        type: keyword
+      program_officers:
+        type: keyword
+      award_amount:
+        type: integer
+      nci_funded_amount:
+        type: integer
+      award_notice_date:
+        type: date
+      project_start_date:
+        type: date
+      project_end_date:
+        type: date
+      opportunity_number:
+        type: keyword
+      org_name:
+        type: keyword
+      org_city:
+        type: keyword
+      org_state:
+        type: keyword
+      org_country:
+        type: keyword
+      # Programs
+      programs:
+        type: nested
+        properties:
+          focus_area: # list
+            type: keyword
+          program_name:
+            type: keyword
+    # Avoiding OPTIONAL MATCH so that we don't get null grants
+    cypher_query: >
+      MATCH (pg:program),
+        (pj:project)-[:projects_of_program]->(pg),
+        (g:grant)-[:grants_of_project]->(pj)
+      RETURN
+        g.grant_id AS grant_id,
+        g.application_id AS application_id,
+        g.fiscal_year AS fiscal_year,
+        g.grant_title AS grant_title,
+        g.abstract_text AS abstract_text,
+        g.keywords AS keywords,
+        g.principal_investigators AS principal_investigators,
+        g.program_officers AS program_officers,
+        g.award_amount AS award_amount,
+        g.nci_funded_amount AS nci_funded_amount,
+        (CASE g.award_notice_date WHEN '' THEN NULL ELSE g.award_notice_date END) AS award_notice_date,
+        (CASE g.project_start_date WHEN '' THEN NULL ELSE g.project_start_date END) AS project_start_date,
+        (CASE g.project_end_date WHEN '' THEN NULL ELSE g.project_end_date END) AS project_end_date,
+        g.opportunity_number AS opportunity_number,
+        g.org_name AS org_name,
+        g.org_city AS org_city,
+        g.org_state AS org_state,
+        g.org_country AS org_country,
+        COLLECT(DISTINCT({
+          focus_area: apoc.text.split(pg.focus_area, ';'),
+          program_name: pg.program_name
+        })) AS programs;
+
+  # Programs are many-to-many with Projects
+  - index_name: programs
+    type: neo4j
+    mapping:
+      program_id:
+        type: keyword
+      program_name:
+        type: keyword
+      program_acronym:
+        type: keyword
+      focus_area: # list
+        type: keyword
+      focus_area_str:
+        type: keyword
+      doc:
+        type: keyword
+      contact_pi:
+        type: keyword
+      contact_pi_email:
+        type: keyword
+      contact_nih:
+        type: keyword
+      contact_nih_email:
+        type: keyword
+      nofo: # list
+        type: keyword
+      nofo_str:
+        type: keyword
+      award: # list
+        type: keyword
+      award_str:
+        type: keyword
+      program_link:
+        type: keyword
+      data_link:
+        type: keyword
+    cypher_query: >
+      MATCH (pg:program)
+      RETURN
+        pg.program_id AS program_id,
+        pg.program_name AS program_name,
+        pg.program_acronym AS program_acronym,
+        apoc.text.split(pg.focus_area, ';') AS focus_area,
+        pg.focus_area AS focus_area_str,
+        pg.doc AS doc,
+        pg.contact_pi AS contact_pi,
+        pg.contact_pi_email AS contact_pi_email,
+        pg.contact_nih AS contact_nih,
+        pg.contact_nih_email AS contact_nih_email,
+        apoc.text.split(pg.nofo, ';') AS nofo,
+        pg.nofo AS nofo_str,
+        apoc.text.split(pg.award, ';') AS award,
+        pg.award AS award_str,
+        pg.program_link AS program_link,
+        pg.data_link AS data_link;
+
+  # Projects are many-to-many with Programs
+  - index_name: projects
+    type: neo4j
+    mapping:
+      project_id:
+        type: keyword
+      project_title:
+        type: keyword
+      abstract_text:
+        type: keyword
+      project_start_date:
+        type: date
+      project_end_date:
+        type: date
+      opportunity_number:
+        type: keyword
+      org_name:
+        type: keyword
+      org_city:
+        type: keyword
+      org_state:
+        type: keyword
+      org_country:
+        type: keyword
+      # Programs
+      programs:
+        type: nested
+        properties:
+          focus_area: # list
+            type: keyword
+          program_name:
+            type: keyword
+    # Avoiding OPTIONAL MATCH so that we don't get null projects
+    cypher_query: >
+      MATCH (pg:program)<-[:projects_of_program]-(pj:project)
+      RETURN
+        pj.project_id AS project_id,
+        pj.project_title AS project_title,
+        pj.abstract_text AS abstract_text,
+        (CASE pj.project_start_date WHEN '' THEN NULL ELSE pj.project_start_date END) AS project_start_date,
+        (CASE pj.project_end_date WHEN '' THEN NULL ELSE pj.project_end_date END) AS project_end_date,
+        pj.opportunity_number AS opportunity_number,
+        pj.org_name AS org_name,
+        pj.org_city AS org_city,
+        pj.org_state AS org_state,
+        pj.org_country AS org_country,
+        COLLECT(DISTINCT({
+          focus_area: apoc.text.split(pg.focus_area, ';'),
+          program_name: pg.program_name
+        })) AS programs;
+
+  # Publications are connected to Programs through Projects
+  - index_name: publications
+    type: neo4j
+    mapping:
+      pmid:
+        type: keyword
+      title:
+        type: keyword
+      authors: # list
+        type: keyword
+      publication_date:
+        type: date
+      cited_by:
+        type: integer
+      relative_citation_ratio:
+        type: float
+      # Programs
+      programs:
+        type: nested
+        properties:
+          focus_area: # list
+            type: keyword
+          program_name:
+            type: keyword
+    # Avoiding OPTIONAL MATCH so that we don't get null publications
+    cypher_query: >
+      MATCH (pg:program),
+        (pj:project)-[:projects_of_program]->(pg),
+        (pb:publication)-[:has_publication]->(pj)
+      RETURN
+        pb.pmid AS pmid,
+        pb.title AS title,
+        pb.authors AS authors,
+        (CASE pb.publication_date WHEN '' THEN NULL ELSE pb.publication_date END) AS publication_date,
+        pb.cited_by AS cited_by,
+        pb.relative_citation_ration AS relative_citation_ratio,
+        COLLECT(DISTINCT({
+          focus_area: apoc.text.split(pg.focus_area, ';'),
+          program_name: pg.program_name
+        })) AS programs;
