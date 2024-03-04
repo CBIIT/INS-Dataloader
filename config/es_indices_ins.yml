@@ -195,6 +195,8 @@ Indices:
       org_country:
         type: keyword
       # Programs
+      focus_area:
+        type: keyword
       programs:
         type: nested
         properties:
@@ -216,6 +218,7 @@ Indices:
         pj.org_city AS org_city,
         pj.org_state AS org_state,
         pj.org_country AS org_country,
+        COLLECT(DISTINCT(pg.focus_area)) AS focus_area,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
           program_name: pg.program_name
