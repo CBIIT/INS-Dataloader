@@ -202,6 +202,8 @@ Indices:
         properties:
           focus_area: # list
             type: keyword
+          program_id:
+            type: keyword
           program_name:
             type: keyword
     # Avoiding OPTIONAL MATCH so that we don't get null projects
@@ -223,6 +225,7 @@ Indices:
         COLLECT(DISTINCT focus_area) AS focus_area,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
+          program_id: pg.program_id,
           program_name: pg.program_name
         })) AS programs;
 
