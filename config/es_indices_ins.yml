@@ -83,6 +83,8 @@ Indices:
         properties:
           focus_area: # list
             type: keyword
+          program_id:
+            type: keyword
           program_name:
             type: keyword
     # Avoiding OPTIONAL MATCH so that we don't get null grants
@@ -111,6 +113,7 @@ Indices:
         g.org_country AS org_country,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
+          program_id: pg.program_id,
           program_name: pg.program_name
         })) AS programs;
 
@@ -251,6 +254,8 @@ Indices:
         properties:
           focus_area: # list
             type: keyword
+          program_id:
+            type: keyword
           program_name:
             type: keyword
     # Avoiding OPTIONAL MATCH so that we don't get null publications
@@ -267,5 +272,6 @@ Indices:
         pb.relative_citation_ration AS relative_citation_ratio,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
+          program_id: pg.program_id,
           program_name: pg.program_name
         })) AS programs;
