@@ -279,7 +279,7 @@ Indices:
         pb.authors AS authors,
         (CASE pb.publication_date WHEN '' THEN NULL ELSE pb.publication_date END) AS publication_date,
         pb.cited_by AS cited_by,
-        pb.relative_citation_ration AS relative_citation_ratio,
+        pb.relative_citation_ratio AS relative_citation_ratio,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
           program_id: pg.program_id,
