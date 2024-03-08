@@ -88,7 +88,8 @@ Indices:
           program_name:
             type: keyword
       # Projects
-      project_id: keyword
+      project_id:
+        type: keyword
     # Avoiding OPTIONAL MATCH so that we don't get null grants
     cypher_query: >
       MATCH (pg:program),
@@ -203,6 +204,8 @@ Indices:
       # Programs
       focus_area:
         type: keyword
+      program_names:
+        type: keyword
       programs:
         type: nested
         properties:
@@ -262,6 +265,9 @@ Indices:
             type: keyword
           program_name:
             type: keyword
+      # Projects
+      project_ids:
+        type: keyword
     # Avoiding OPTIONAL MATCH so that we don't get null publications
     cypher_query: >
       MATCH (pg:program),
@@ -274,9 +280,9 @@ Indices:
         (CASE pb.publication_date WHEN '' THEN NULL ELSE pb.publication_date END) AS publication_date,
         pb.cited_by AS cited_by,
         pb.relative_citation_ration AS relative_citation_ratio,
-        apoc.text.join(COLLECT(DISTINCT pj.project_id), ';') AS project_ids,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
           program_id: pg.program_id,
           program_name: pg.program_name
-        })) AS programs;
+        })) AS programs,
+        apoc.text.join(COLLECT(DISTINCT pj.project_id), ';') AS project_ids;
