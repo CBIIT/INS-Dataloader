@@ -87,6 +87,9 @@ Indices:
             type: keyword
           program_name:
             type: keyword
+      # Projects
+      project_id:
+        type: keyword
     # Avoiding OPTIONAL MATCH so that we don't get null grants
     cypher_query: >
       MATCH (pg:program),
@@ -115,7 +118,8 @@ Indices:
           focus_area: apoc.text.split(pg.focus_area, ';'),
           program_id: pg.program_id,
           program_name: pg.program_name
-        })) AS programs;
+        })) AS programs,
+        pj.project_id AS project_id;
 
   # Programs are many-to-many with Projects
   - index_name: programs
@@ -200,6 +204,8 @@ Indices:
       # Programs
       focus_area:
         type: keyword
+      program_names:
+        type: keyword
       programs:
         type: nested
         properties:
@@ -226,6 +232,7 @@ Indices:
         pj.org_state AS org_state,
         pj.org_country AS org_country,
         COLLECT(DISTINCT focus_area) AS focus_area,
+        apoc.text.join(COLLECT(DISTINCT pg.program_name), ';') AS program_names,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
           program_id: pg.program_id,
@@ -258,6 +265,9 @@ Indices:
             type: keyword
           program_name:
             type: keyword
+      # Projects
+      project_ids:
+        type: keyword
     # Avoiding OPTIONAL MATCH so that we don't get null publications
     cypher_query: >
       MATCH (pg:program),
@@ -269,9 +279,10 @@ Indices:
         pb.authors AS authors,
         (CASE pb.publication_date WHEN '' THEN NULL ELSE pb.publication_date END) AS publication_date,
         pb.cited_by AS cited_by,
-        pb.relative_citation_ration AS relative_citation_ratio,
+        pb.relative_citation_ratio AS relative_citation_ratio,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
           program_id: pg.program_id,
           program_name: pg.program_name
-        })) AS programs;
+        })) AS programs,
+        apoc.text.join(COLLECT(DISTINCT pj.project_id), ';') AS project_ids;
