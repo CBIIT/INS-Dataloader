@@ -1,4 +1,4 @@
-# Datamodel commit 9f16446
+# Datamodel commit fb6185a
 
 Indices:
   # Global search
@@ -135,7 +135,9 @@ Indices:
         type: keyword
       focus_area_str:
         type: keyword
-      doc:
+      doc: # list
+        type: keyword
+      doc_str:
         type: keyword
       contact_pi:
         type: keyword
@@ -165,7 +167,8 @@ Indices:
         pg.program_acronym AS program_acronym,
         apoc.text.split(pg.focus_area, ';') AS focus_area,
         pg.focus_area AS focus_area_str,
-        pg.doc AS doc,
+        apoc.text.split(pg.doc, ';') AS doc,
+        pg.doc AS doc_str,
         pg.contact_pi AS contact_pi,
         pg.contact_pi_email AS contact_pi_email,
         pg.contact_nih AS contact_nih,
