@@ -43,40 +43,91 @@ Indices:
     mapping:
       grant_id:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       application_id:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       fiscal_year:
         type: integer
       grant_title:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       abstract_text:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       keywords: # list
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       principal_investigators: # list
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       program_officers:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       award_amount:
         type: integer
       nci_funded_amount:
         type: integer
       award_notice_date:
         type: date
+        format: yyyy-MM-dd
       project_start_date:
         type: date
+        format: yyyy-MM-dd
       project_end_date:
         type: date
+        format: yyyy-MM-dd
       opportunity_number:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       org_name:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       org_city:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       org_state:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       org_country:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       # Programs
       programs:
         type: nested
@@ -90,6 +141,10 @@ Indices:
       # Projects
       project_id:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
     # Avoiding OPTIONAL MATCH so that we don't get null grants
     cypher_query: >
       MATCH (pg:program),
@@ -127,45 +182,113 @@ Indices:
     mapping:
       program_id:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       program_name:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       program_acronym:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       focus_area: # list
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       focus_area_str:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       doc: # list
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       doc_str:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       contact_pi:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       contact_pi_email:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       contact_nih:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       contact_nih_email:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       nofo: # list
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       nofo_str:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       award: # list
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       award_str:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       program_link:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       data_link:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
     cypher_query: >
       MATCH (pg:program)
       RETURN
         pg.program_id AS program_id,
         pg.program_name AS program_name,
         pg.program_acronym AS program_acronym,
-        apoc.text.split(pg.focus_area, ';') AS focus_area,
+        apoc.coll.sort(apoc.text.split(pg.focus_area, ';')) AS focus_area,
         pg.focus_area AS focus_area_str,
         apoc.text.split(pg.doc, ';') AS doc,
         pg.doc AS doc_str,
@@ -186,29 +309,71 @@ Indices:
     mapping:
       project_id:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       project_title:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       abstract_text:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       project_start_date:
         type: date
+        format: yyyy-MM-dd
       project_end_date:
         type: date
+        format: yyyy-MM-dd
       opportunity_number:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       org_name:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       org_city:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       org_state:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       org_country:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       # Programs
       focus_area:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       program_names:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       programs:
         type: nested
         properties:
@@ -235,7 +400,7 @@ Indices:
         pj.org_state AS org_state,
         pj.org_country AS org_country,
         COLLECT(DISTINCT focus_area) AS focus_area,
-        apoc.text.join(COLLECT(DISTINCT pg.program_name), ';') AS program_names,
+        apoc.text.join(apoc.coll.sort(COLLECT(DISTINCT pg.program_name)), ';') AS program_names,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
           program_id: pg.program_id,
@@ -248,12 +413,25 @@ Indices:
     mapping:
       pmid:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       title:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       authors: # list
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       publication_date:
         type: date
+        format: yyyy-MM-dd
       cited_by:
         type: integer
       relative_citation_ratio:
@@ -271,6 +449,10 @@ Indices:
       # Projects
       project_ids:
         type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
     # Avoiding OPTIONAL MATCH so that we don't get null publications
     cypher_query: >
       MATCH (pg:program),
@@ -279,6 +461,7 @@ Indices:
       RETURN
         pb.pmid AS pmid,
         pb.title AS title,
+        // apoc.text.join(apoc.coll.sort(apoc.text.split(pb.authors, ';')), ';') AS authors,
         pb.authors AS authors,
         (CASE pb.publication_date WHEN '' THEN NULL ELSE pb.publication_date END) AS publication_date,
         toInteger(pb.cited_by) AS cited_by,
@@ -288,4 +471,4 @@ Indices:
           program_id: pg.program_id,
           program_name: pg.program_name
         })) AS programs,
-        apoc.text.join(COLLECT(DISTINCT pj.project_id), ';') AS project_ids;
+        apoc.text.join(apoc.coll.sort(COLLECT(DISTINCT pj.project_id)), ';') AS project_ids;
