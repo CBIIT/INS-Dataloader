@@ -9,14 +9,15 @@ Properties:
     publication: publications
 
   type_mapping:
+    list: String
     string: String
-    number: Float
-    integer: Int
+    Float: Float
+    Int: Int
     boolean: Boolean
     array: Array
     object: Object
     datetime: DateTime
-    date: Date
+    Date: Date
     TBD: String
 
   id_fields:
