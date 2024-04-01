@@ -397,6 +397,18 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      program_acronyms:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      program_ids:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       program_names:
         type: keyword
         fields:
@@ -429,6 +441,8 @@ Indices:
         pj.org_state AS org_state,
         pj.org_country AS org_country,
         COLLECT(DISTINCT focus_area) AS focus_area,
+        apoc.text.join(COLLECT(DISTINCT pg.program_acronym), ';') AS program_acronyms,
+        apoc.text.join(COLLECT(DISTINCT pg.program_id), ';') AS program_ids,
         apoc.text.join(COLLECT(DISTINCT pg.program_name), ';') AS program_names,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
@@ -476,6 +490,12 @@ Indices:
           program_name:
             type: keyword
       # Projects
+      projects:
+        type: nested
+        properties:
+          project_id:
+            type: keyword
+      # Projects
       project_ids:
         type: keyword
         fields:
@@ -501,4 +521,7 @@ Indices:
           program_id: pg.program_id,
           program_name: pg.program_name
         })) AS programs,
+        COLLECT(DISTINCT({
+          project_id: pj.project_id
+        })) AS projects,
         apoc.text.join(COLLECT(DISTINCT pj.project_id), ';') AS project_ids;
