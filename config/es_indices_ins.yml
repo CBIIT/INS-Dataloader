@@ -1,0 +1,504 @@
+# Datamodel commit fb6185a
+
+Indices:
+  # Global search
+  - index_name: ins_static_pages
+    type: about_file
+    mapping:
+      page:
+        type: search_as_you_type
+      title:
+        type: search_as_you_type
+      primaryContentImage:
+        type: text
+      content:
+        type: object
+
+  - index_name: home_stats
+    type: neo4j
+    mapping:
+      num_grants:
+        type: integer
+      num_programs:
+        type: integer
+      num_projects:
+        type: integer
+      num_publications:
+        type: integer
+    # Using OPTIONAL MATCH so that we get all Programs
+    cypher_query: >
+      MATCH (pg:program)
+        OPTIONAL MATCH (pj:project)-[:projects_of_program]->(pg)
+        OPTIONAL MATCH (g:grant)-[:grants_of_project]->(pj)
+        OPTIONAL MATCH (pb:publication)-[:has_publication]->(pj)
+      RETURN
+        COUNT(DISTINCT g) AS num_grants,
+        COUNT(DISTINCT pg) AS num_programs,
+        COUNT(DISTINCT pj) AS num_projects,
+        COUNT(DISTINCT pb) AS num_publications;
+
+  # Grants are connected to Programs through Projects
+  - index_name: grants
+    type: neo4j
+    mapping:
+      grant_id:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      application_id:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      fiscal_year:
+        type: integer
+      grant_title:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      abstract_text:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      keywords: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      principal_investigators: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      program_officers:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      award_amount:
+        type: integer
+      nci_funded_amount:
+        type: integer
+      award_notice_date:
+        type: date
+        format: yyyy-MM-dd
+      project_start_date:
+        type: date
+        format: yyyy-MM-dd
+      project_end_date:
+        type: date
+        format: yyyy-MM-dd
+      opportunity_number:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      org_name:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      org_city:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      org_state:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      org_country:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      # Programs
+      programs:
+        type: nested
+        properties:
+          focus_area: # list
+            type: keyword
+          program_id:
+            type: keyword
+          program_name:
+            type: keyword
+      # Projects
+      project_id:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+    # Avoiding OPTIONAL MATCH so that we don't get null grants
+    cypher_query: >
+      MATCH (pg:program),
+        (pj:project)-[:projects_of_program]->(pg),
+        (g:grant)-[:grants_of_project]->(pj)
+      RETURN
+        g.grant_id AS grant_id,
+        g.application_id AS application_id,
+        g.fiscal_year AS fiscal_year,
+        g.grant_title AS grant_title,
+        g.abstract_text AS abstract_text,
+        g.keywords AS keywords,
+        g.principal_investigators AS principal_investigators,
+        g.program_officers AS program_officers,
+        g.award_amount AS award_amount,
+        g.nci_funded_amount AS nci_funded_amount,
+        (CASE g.award_notice_date WHEN '' THEN NULL ELSE g.award_notice_date END) AS award_notice_date,
+        (CASE g.project_start_date WHEN '' THEN NULL ELSE g.project_start_date END) AS project_start_date,
+        (CASE g.project_end_date WHEN '' THEN NULL ELSE g.project_end_date END) AS project_end_date,
+        g.opportunity_number AS opportunity_number,
+        g.org_name AS org_name,
+        g.org_city AS org_city,
+        g.org_state AS org_state,
+        g.org_country AS org_country,
+        COLLECT(DISTINCT({
+          focus_area: apoc.text.split(pg.focus_area, ';'),
+          program_id: pg.program_id,
+          program_name: pg.program_name
+        })) AS programs,
+        pj.project_id AS project_id;
+
+  # Programs are many-to-many with Projects
+  - index_name: programs
+    type: neo4j
+    mapping:
+      program_id:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      program_name:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      program_acronym:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      focus_area: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      focus_area_str:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      doc: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      doc_str:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      contact_pi:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      contact_pi_email:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      contact_nih:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      contact_nih_email:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      nofo: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      nofo_str:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      award: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      award_str:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      program_link:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      data_link:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+    cypher_query: >
+      MATCH (pg:program)
+      RETURN
+        pg.program_id AS program_id,
+        pg.program_name AS program_name,
+        pg.program_acronym AS program_acronym,
+        apoc.coll.sort(apoc.text.split(pg.focus_area, ';')) AS focus_area,
+        pg.focus_area AS focus_area_str,
+        apoc.text.split(pg.doc, ';') AS doc,
+        pg.doc AS doc_str,
+        pg.contact_pi AS contact_pi,
+        pg.contact_pi_email AS contact_pi_email,
+        pg.contact_nih AS contact_nih,
+        pg.contact_nih_email AS contact_nih_email,
+        apoc.text.split(pg.nofo, ';') AS nofo,
+        pg.nofo AS nofo_str,
+        apoc.text.split(pg.award, ';') AS award,
+        pg.award AS award_str,
+        pg.program_link AS program_link,
+        pg.data_link AS data_link;
+
+  - index_name: faceted_projects
+    type: neo4j
+    mapping:
+      project_id:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      # Programs
+      focus_area:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      program_name:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+    cypher_query: >
+      MATCH (pg:program)<-[:projects_of_program]-(pj:project)
+      RETURN
+        pj.project_id AS project_id,
+        apoc.text.split(pg.focus_area, ';') AS focus_area,
+        pg.program_name AS program_name;
+
+  # Projects are many-to-many with Programs
+  - index_name: projects
+    type: neo4j
+    mapping:
+      project_id:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      project_title:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      abstract_text:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      project_start_date:
+        type: date
+        format: yyyy-MM-dd
+      project_end_date:
+        type: date
+        format: yyyy-MM-dd
+      opportunity_number:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      org_name:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      org_city:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      org_state:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      org_country:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      # Programs
+      focus_area:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      program_names:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      programs:
+        type: nested
+        properties:
+          focus_area: # list
+            type: keyword
+          program_id:
+            type: keyword
+          program_name:
+            type: keyword
+    # Avoiding OPTIONAL MATCH so that we don't get null projects
+    cypher_query: >
+      MATCH (pg:program)<-[:projects_of_program]-(pj:project)
+      WITH pg, pj, apoc.text.split(pg.focus_area, ';') AS focus_areas order by toLower(pg.program_name) asc
+      UNWIND focus_areas AS focus_area
+      RETURN
+        pj.project_id AS project_id,
+        pj.project_title AS project_title,
+        pj.abstract_text AS abstract_text,
+        (CASE pj.project_start_date WHEN '' THEN NULL ELSE pj.project_start_date END) AS project_start_date,
+        (CASE pj.project_end_date WHEN '' THEN NULL ELSE pj.project_end_date END) AS project_end_date,
+        pj.opportunity_number AS opportunity_number,
+        pj.org_name AS org_name,
+        pj.org_city AS org_city,
+        pj.org_state AS org_state,
+        pj.org_country AS org_country,
+        COLLECT(DISTINCT focus_area) AS focus_area,
+        apoc.text.join(COLLECT(DISTINCT pg.program_name), ';') AS program_names,
+        COLLECT(DISTINCT({
+          focus_area: apoc.text.split(pg.focus_area, ';'),
+          program_id: pg.program_id,
+          program_name: pg.program_name
+        })) AS programs;
+
+  # Publications are connected to Programs through Projects
+  - index_name: publications
+    type: neo4j
+    mapping:
+      pmid:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      title:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      authors: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      publication_date:
+        type: date
+        format: yyyy-MM-dd
+      cited_by:
+        type: integer
+      relative_citation_ratio:
+        type: float
+      # Programs
+      programs:
+        type: nested
+        properties:
+          focus_area: # list
+            type: keyword
+          program_id:
+            type: keyword
+          program_name:
+            type: keyword
+      # Projects
+      project_ids:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+    # Avoiding OPTIONAL MATCH so that we don't get null publications
+    cypher_query: >
+      MATCH (pg:program),
+        (pj:project)-[:projects_of_program]->(pg),
+        (pb:publication)-[:has_publication]->(pj)
+      with pb, pg, pj order by toLower(pj.project_id) asc
+      RETURN
+        pb.pmid AS pmid,
+        pb.title AS title,
+        // apoc.text.join(apoc.coll.sort(apoc.text.split(pb.authors, ';')), ';') AS authors,
+        pb.authors AS authors,
+        (CASE pb.publication_date WHEN '' THEN NULL ELSE pb.publication_date END) AS publication_date,
+        toInteger(pb.cited_by) AS cited_by,
+        toFloat(pb.relative_citation_ratio) AS relative_citation_ratio,
+        COLLECT(DISTINCT({
+          focus_area: apoc.text.split(pg.focus_area, ';'),
+          program_id: pg.program_id,
+          program_name: pg.program_name
+        })) AS programs,
+        apoc.text.join(COLLECT(DISTINCT pj.project_id), ';') AS project_ids;

@@ -706,7 +706,7 @@ class DataLoader:
                 tmp_df_validation_result_missing['Severity'] = ["error"] * len(df_missing)
                 df_validation_result = pd.concat([df_validation_result, tmp_df_validation_result_missing])
             if len(df_duplicate_id) > 0:
-                df_duplicate_id = df_duplicate_id.explode('duplicate_line_num').groupby(['duplicate_id', 'duplicate_reason', 'duplicate_id_field', 'node_type'])['duplicate_line_num'].unique().reset_index()
+                df_duplicate_id = df_duplicate_id.explode('duplicate_line_num').groupby(['duplicate_id', 'duplicate_reason', 'duplicate_id_field', 'duplicate_node_type'])['duplicate_line_num'].unique().reset_index()
                 tmp_df_validation_result_duplicate= pd.DataFrame()
                 tmp_df_validation_result_duplicate['File Name'] = [os.path.basename(file_name)] * len(df_duplicate_id)
                 tmp_df_validation_result_duplicate['Property'] = df_duplicate_id['duplicate_id_field']

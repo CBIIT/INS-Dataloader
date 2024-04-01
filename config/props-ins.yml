@@ -1,0 +1,27 @@
+Properties:
+  domain: studycatalog.cancer.gov
+  rel_prop_delimiter: "$"
+
+  plurals:
+    program: programs
+    project: projects
+    grant: grants
+    publication: publications
+
+  type_mapping:
+    list: String
+    string: String
+    Float: Float
+    Int: Int
+    boolean: Boolean
+    array: Array
+    object: Object
+    datetime: DateTime
+    Date: Date
+    TBD: String
+
+  id_fields:
+    program: program_id
+    project: project_id
+    grant: grant_id
+    publication: pmid
