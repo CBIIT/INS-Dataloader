@@ -198,6 +198,12 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      data_link_and_program_acronym:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       focus_area: # list
         type: keyword
         fields:
@@ -288,6 +294,10 @@ Indices:
         pg.program_id AS program_id,
         pg.program_name AS program_name,
         pg.program_acronym AS program_acronym,
+        (CASE pg.data_link
+          WHEN "" THEN NULL
+          ELSE pg.program_acronym
+        END) AS data_link_and_program_acronym,
         apoc.coll.sort(apoc.text.split(pg.focus_area, ';')) AS focus_area,
         pg.focus_area AS focus_area_str,
         apoc.text.split(pg.doc, ';') AS doc,
