@@ -61,6 +61,12 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      grant_title_alphanum: # For sorting without special characters
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       abstract_text:
         type: keyword
         fields:
@@ -155,6 +161,7 @@ Indices:
         g.application_id AS application_id,
         g.fiscal_year AS fiscal_year,
         g.grant_title AS grant_title,
+        apoc.text.regreplace(g.grant_title, "[^\\p{Alpha}0-9]", "") AS grant_title_alphanum,
         g.abstract_text AS abstract_text,
         g.keywords AS keywords,
         g.principal_investigators AS principal_investigators,
@@ -358,6 +365,12 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      project_title_alphanum: # For sorting without special characters
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
       abstract_text:
         type: keyword
         fields:
@@ -442,6 +455,7 @@ Indices:
       RETURN
         pj.project_id AS project_id,
         pj.project_title AS project_title,
+        apoc.text.regreplace(pj.project_title, "[^\\p{Alpha}0-9]", "") AS project_title_alphanum,
         pj.abstract_text AS abstract_text,
         (CASE pj.project_start_date WHEN '' THEN NULL ELSE pj.project_start_date END) AS project_start_date,
         (CASE pj.project_end_date WHEN '' THEN NULL ELSE pj.project_end_date END) AS project_end_date,
@@ -471,6 +485,12 @@ Indices:
             type: keyword
             normalizer: lowercase
       title:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      title_alphanum: # For sorting without special characters
         type: keyword
         fields:
           sort:
@@ -521,6 +541,7 @@ Indices:
       RETURN
         pb.pmid AS pmid,
         pb.title AS title,
+        apoc.text.regreplace(pb.title, "[^\\p{Alpha}0-9]", "") AS title_alphanum,
         // apoc.text.join(apoc.coll.sort(apoc.text.split(pb.authors, ';')), ';') AS authors,
         pb.authors AS authors,
         (CASE pb.publication_date WHEN '' THEN NULL ELSE pb.publication_date END) AS publication_date,
