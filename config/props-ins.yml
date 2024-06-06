@@ -11,13 +11,13 @@ Properties:
   type_mapping:
     list: String
     string: String
-    Float: Float
-    Int: Int
+    number: Float
+    integer: Int
     boolean: Boolean
     array: Array
     object: Object
     datetime: DateTime
-    Date: Date
+    date: Date
     TBD: String
 
   id_fields:
