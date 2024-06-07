@@ -549,18 +549,22 @@ Indices:
         pg,
         pj,
         apoc.text.split(pg.focus_area, ';') AS focus_areas,
-        apoc.text.split(pg.cancer_type, ';') AS cancer_type
+        apoc.text.split(pg.cancer_type, ';') AS cancer_type,
+        apoc.text.join(COLLECT(DISTINCT pg.program_name), ';') AS program_names
       ORDER BY toLower(pg.program_name) ASC
       UNWIND focus_areas AS focus_area
-      RETURN
+      WITH
         pj.project_id AS project_id,
+        apoc.text.regreplace(apoc.text.clean(pj.project_id), '[^\\p{Alpha}0-9]', '') AS project_id_sort,
         pj.project_title AS project_title,
+        apoc.text.regreplace(apoc.text.clean(pj.project_title), '[^\\p{Alpha}0-9]', '') AS project_title_sort,
         apoc.text.regreplace(pj.project_title, "[^\\p{Alpha}0-9]", "") AS project_title_alphanum,
         pj.abstract_text AS abstract_text,
         (CASE pj.project_start_date WHEN '' THEN NULL ELSE pj.project_start_date END) AS project_start_date,
         (CASE pj.project_end_date WHEN '' THEN NULL ELSE pj.project_end_date END) AS project_end_date,
         pj.opportunity_number AS opportunity_number,
         pj.org_name AS org_name,
+        apoc.text.regreplace(apoc.text.clean(pj.org_name), '[^\\p{Alpha}0-9]', '') AS org_name_sort,
         pj.org_city AS org_city,
         pj.org_state AS org_state,
         pj.org_country AS org_country,
@@ -568,13 +572,36 @@ Indices:
         COLLECT(DISTINCT cancer_type) AS cancer_type,
         apoc.text.join(COLLECT(DISTINCT pg.program_acronym), ';') AS program_acronyms,
         apoc.text.join(COLLECT(DISTINCT pg.program_id), ';') AS program_ids,
-        apoc.text.join(COLLECT(DISTINCT pg.program_name), ';') AS program_names,
+        program_names,
+        apoc.text.regreplace(apoc.text.clean(program_names), '[^\\p{Alpha}0-9]', '') AS program_names_sort,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
           cancer_type: apoc.text.split(pg.cancer_type, ';'),
           program_id: pg.program_id,
           program_name: pg.program_name
-        })) AS programs;
+        })) AS programs
+      RETURN
+        project_id,
+        project_id_sort,
+        project_title,
+        project_title_sort,
+        project_title_alphanum,
+        abstract_text,
+        project_start_date,
+        project_end_date,
+        opportunity_number,
+        org_name,
+        org_name_sort,
+        org_city,
+        org_state,
+        org_country,
+        focus_area,
+        cancer_type,
+        program_acronyms,
+        program_ids,
+        program_names,
+        program_names_sort,
+        programs;
 
   # Publications are connected to Programs through Projects
   - index_name: publications
