@@ -230,18 +230,24 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      program_id_sort:
+        type: keyword
       program_name:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
+      program_name_sort:
+        type: keyword
       program_acronym:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
+      program_acronym_sort:
+        type: keyword
       data_link_and_program_acronym:
         type: keyword
         fields:
@@ -254,6 +260,8 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      focus_area_sort:
+        type: keyword
       focus_area_str:
         type: keyword
         fields:
@@ -266,6 +274,8 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      cancer_type_sort:
+        type: keyword
       cancer_type_str:
         type: keyword
         fields:
@@ -338,26 +348,35 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      program_link_sort:
+        type: keyword
       data_link:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
+      data:
+        type: keyword
     cypher_query: >
       MATCH (pg:program)
-      RETURN
+      WITH
         pg.program_id AS program_id,
+        apoc.text.regreplace(apoc.text.clean(pg.program_id), '[^\\p{Alpha}0-9]', '') AS program_id_sort,
         pg.program_name AS program_name,
+        apoc.text.regreplace(apoc.text.clean(pg.program_name), '[^\\p{Alpha}0-9]', '') AS program_name_sort,
         pg.program_acronym AS program_acronym,
+        apoc.text.regreplace(apoc.text.clean(pg.program_acronym), '[^\\p{Alpha}0-9]', '') AS program_acronym_sort,
         (CASE pg.data_link
           WHEN "" THEN NULL
           ELSE pg.program_acronym
         END) AS data_link_and_program_acronym,
         apoc.coll.sort(apoc.text.split(pg.focus_area, ';')) AS focus_area,
         pg.focus_area AS focus_area_str,
+        apoc.text.regreplace(apoc.text.clean(pg.focus_area), '[^\\p{Alpha}0-9]', '') AS focus_area_sort,
         apoc.coll.sort(apoc.text.split(pg.cancer_type, ';')) AS cancer_type,
         pg.cancer_type AS cancer_type_str,
+        apoc.text.regreplace(apoc.text.clean(pg.cancer_type), '[^\\p{Alpha}0-9]', '') AS cancer_type_sort,
         apoc.text.split(pg.doc, ';') AS doc,
         pg.doc AS doc_str,
         pg.contact_pi AS contact_pi,
@@ -369,7 +388,37 @@ Indices:
         apoc.text.split(pg.award, ';') AS award,
         pg.award AS award_str,
         pg.program_link AS program_link,
-        pg.data_link AS data_link;
+        apoc.text.regreplace(apoc.text.clean(pg.program_link), '[^\\p{Alpha}0-9]', '') AS program_link_sort,
+        pg.data_link AS data_link,
+        apoc.text.regreplace(apoc.text.clean(pg.data_link), '[^\\p{Alpha}0-9]', '') AS data_link_sort
+      RETURN
+        program_id,
+        program_id_sort,
+        program_name,
+        program_name_sort,
+        program_acronym,
+        program_acronym_sort,
+        data_link_and_program_acronym,
+        focus_area,
+        focus_area_str,
+        focus_area_sort,
+        cancer_type,
+        cancer_type_str,
+        cancer_type_sort,
+        doc,
+        doc_str,
+        contact_pi,
+        contact_pi_email,
+        contact_nih,
+        contact_nih_email,
+        nofo,
+        nofo_str,
+        award,
+        award_str,
+        program_link,
+        program_link_sort,
+        data_link,
+        data_link_sort;
 
   - index_name: faceted_projects
     type: neo4j
