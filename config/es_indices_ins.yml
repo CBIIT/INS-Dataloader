@@ -322,7 +322,7 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
-      data:
+      data_link_sort:
         type: keyword
     cypher_query: >
       MATCH (pg:program)
