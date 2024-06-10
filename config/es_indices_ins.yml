@@ -490,12 +490,6 @@ Indices:
             normalizer: lowercase
       project_title_sort:
         type: keyword
-      project_title_alphanum: # For sorting without special characters
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
       abstract_text:
         type: keyword
         fields:
@@ -600,7 +594,6 @@ Indices:
         apoc.text.regreplace(apoc.text.clean(pj.project_id), '[^\\p{Alpha}0-9]', '') AS project_id_sort,
         pj.project_title AS project_title,
         apoc.text.regreplace(apoc.text.clean(pj.project_title), '[^\\p{Alpha}0-9]', '') AS project_title_sort,
-        apoc.text.regreplace(pj.project_title, "[^\\p{Alpha}0-9]", "") AS project_title_alphanum,
         pj.abstract_text AS abstract_text,
         (CASE pj.project_start_date WHEN '' THEN NULL ELSE pj.project_start_date END) AS project_start_date,
         (CASE pj.project_end_date WHEN '' THEN NULL ELSE pj.project_end_date END) AS project_end_date,
@@ -627,7 +620,6 @@ Indices:
         project_id_sort,
         project_title,
         project_title_sort,
-        project_title_alphanum,
         abstract_text,
         project_start_date,
         project_end_date,
