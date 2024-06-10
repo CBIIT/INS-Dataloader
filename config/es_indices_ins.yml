@@ -47,6 +47,8 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      grant_id_sort:
+        type: keyword
       application_id:
         type: keyword
         fields:
@@ -61,12 +63,8 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
-      grant_title_alphanum: # For sorting without special characters
+      grant_title_sort:
         type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
       abstract_text:
         type: keyword
         fields:
@@ -85,12 +83,16 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      principal_investigators_sort:
+        type: keyword
       program_officers:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
+      program_officers_sort:
+        type: keyword
       award_amount:
         type: integer
       nci_funded_amount:
@@ -153,21 +155,26 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      project_id_sort:
+        type: keyword
     # Avoiding OPTIONAL MATCH so that we don't get null grants
     cypher_query: >
       MATCH (pg:program),
         (pj:project)-[:projects_of_program]->(pg),
         (g:grant)-[:grants_of_project]->(pj)
-      RETURN
+      WITH
         g.grant_id AS grant_id,
+        apoc.text.regreplace(apoc.text.clean(g.grant_id), '[^\\p{Alpha}0-9]', '') AS grant_id_sort,
         g.application_id AS application_id,
         g.fiscal_year AS fiscal_year,
         g.grant_title AS grant_title,
-        apoc.text.regreplace(g.grant_title, "[^\\p{Alpha}0-9]", "") AS grant_title_alphanum,
+        apoc.text.regreplace(apoc.text.clean(g.grant_title), '[^\\p{Alpha}0-9]', '') AS grant_title_sort,
         g.abstract_text AS abstract_text,
         g.keywords AS keywords,
         g.principal_investigators AS principal_investigators,
+        apoc.text.regreplace(apoc.text.clean(g.principal_investigators), '[^\\p{Alpha}0-9]', '') AS principal_investigators_sort,
         g.program_officers AS program_officers,
+        apoc.text.regreplace(apoc.text.clean(g.program_officers), '[^\\p{Alpha}0-9]', '') AS program_officers_sort,
         g.award_amount AS award_amount,
         g.nci_funded_amount AS nci_funded_amount,
         (CASE g.award_notice_date WHEN '' THEN NULL ELSE g.award_notice_date END) AS award_notice_date,
@@ -184,7 +191,34 @@ Indices:
           program_id: pg.program_id,
           program_name: pg.program_name
         })) AS programs,
-        pj.project_id AS project_id;
+        pj.project_id AS project_id,
+        apoc.text.regreplace(apoc.text.clean(pj.project_id), '[^\\p{Alpha}0-9]', '') AS project_id_sort
+      RETURN
+        grant_id,
+        grant_id_sort,
+        application_id,
+        fiscal_year,
+        grant_title,
+        grant_title_sort,
+        abstract_text,
+        keywords,
+        principal_investigators,
+        principal_investigators_sort,
+        program_officers,
+        program_officers_sort,
+        award_amount,
+        nci_funded_amount,
+        award_notice_date,
+        project_start_date,
+        project_end_date,
+        opportunity_number,
+        org_name,
+        org_city,
+        org_state,
+        org_country,
+        programs,
+        project_id,
+        project_id_sort;
 
   # Programs are many-to-many with Projects
   - index_name: programs
