@@ -480,12 +480,16 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      project_id_sort:
+        type: keyword
       project_title:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
+      project_title_sort:
+        type: keyword
       project_title_alphanum: # For sorting without special characters
         type: keyword
         fields:
@@ -516,6 +520,8 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      org_name_sort:
+        type: keyword
       org_city:
         type: keyword
         fields:
@@ -565,6 +571,8 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      program_names_sort:
+        type: keyword
       programs:
         type: nested
         properties:
