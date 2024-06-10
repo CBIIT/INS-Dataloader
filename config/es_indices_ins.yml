@@ -647,24 +647,24 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      pmid_sort:
+        type: keyword
       title:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      title_alphanum: # For sorting without special characters
+      title_sort:
         type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
       authors: # list
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
+      authors:
+        type: keyword
       publication_date:
         type: date
         format: yyyy-MM-dd
@@ -697,6 +697,8 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
+      project_ids_sort:
+        type: keyword
     # Avoiding OPTIONAL MATCH so that we don't get null publications
     cypher_query: >
       MATCH (pg:program),
@@ -708,7 +710,6 @@ Indices:
         apoc.text.regreplace(apoc.text.clean(pb.pmid), '[^\\p{Alpha}0-9]', '') AS pmid_sort,
         pb.title AS title,
         apoc.text.regreplace(apoc.text.clean(pb.title), '[^\\p{Alpha}0-9]', '') AS title_sort,
-        apoc.text.regreplace(pb.title, "[^\\p{Alpha}0-9]", "") AS title_alphanum,
         // apoc.text.join(apoc.coll.sort(apoc.text.split(pb.authors, ';')), ';') AS authors,
         pb.authors AS authors,
         apoc.text.regreplace(apoc.text.clean(pb.authors), '[^\\p{Alpha}0-9]', '') AS authors_sort,
@@ -731,7 +732,6 @@ Indices:
         pmid_sort,
         title,
         title_sort,
-        title_alphanum,
         authors,
         authors_sort,
         publication_date,
