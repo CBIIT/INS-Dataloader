@@ -704,29 +704,35 @@ Indices:
       MATCH (pg:program),
         (pj:project)-[:projects_of_program]->(pg),
         (pb:publication)-[:has_publication]->(pj)
-      WITH pb, pg, pj, apoc.text.join(COLLECT(DISTINCT pj.project_id), ';') AS project_ids ORDER BY toLower(pj.project_id) ASC
+      WITH
+        pb,
+        pj,
+        COLLECT(DISTINCT pg) AS programs,
+        COLLECT(DISTINCT pj) AS projects
+      ORDER BY toLower(pj.project_id) ASC
+      UNWIND programs AS program
+      UNWIND projects AS project
       WITH
         pb.pmid AS pmid,
         apoc.text.regreplace(apoc.text.clean(pb.pmid), '[^\\p{Alpha}0-9]', '') AS pmid_sort,
         pb.title AS title,
         apoc.text.regreplace(apoc.text.clean(pb.title), '[^\\p{Alpha}0-9]', '') AS title_sort,
-        // apoc.text.join(apoc.coll.sort(apoc.text.split(pb.authors, ';')), ';') AS authors,
         pb.authors AS authors,
         apoc.text.regreplace(apoc.text.clean(pb.authors), '[^\\p{Alpha}0-9]', '') AS authors_sort,
         (CASE pb.publication_date WHEN '' THEN NULL ELSE pb.publication_date END) AS publication_date,
         toInteger(pb.cited_by) AS cited_by,
         toFloat(pb.relative_citation_ratio) AS relative_citation_ratio,
         COLLECT(DISTINCT({
-          focus_area: apoc.text.split(pg.focus_area, ';'),
-          cancer_type: apoc.text.split(pg.cancer_type, ';'),
-          program_id: pg.program_id,
-          program_name: pg.program_name
+          focus_area: apoc.text.split(program.focus_area, ';'),
+          cancer_type: apoc.text.split(program.cancer_type, ';'),
+          program_id: program.program_id,
+          program_name: program.program_name
         })) AS programs,
         COLLECT(DISTINCT({
-          project_id: pj.project_id
+          project_id: project.project_id
         })) AS projects,
-        project_ids,
-        apoc.text.regreplace(apoc.text.clean(pb.pmid), '[^\\p{Alpha}0-9]', '') AS project_ids_sort
+        COLLECT(DISTINCT project.project_id) AS project_ids,
+        apoc.text.regreplace(apoc.text.clean(apoc.text.join(COLLECT(DISTINCT project.project_ids), '')), '[^\\p{Alpha}0-9]', '') AS project_ids_sort
       RETURN
         pmid,
         pmid_sort,
