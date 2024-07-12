@@ -585,8 +585,7 @@ Indices:
         pg,
         pj,
         apoc.text.split(pg.focus_area, ';') AS focus_areas,
-        apoc.text.split(pg.cancer_type, ';') AS cancer_type,
-        apoc.text.join(COLLECT(DISTINCT pg.program_name), ';') AS program_names
+        apoc.text.split(pg.cancer_type, ';') AS cancer_type
       ORDER BY toLower(pg.program_name) ASC
       UNWIND focus_areas AS focus_area
       WITH
@@ -605,10 +604,10 @@ Indices:
         pj.org_country AS org_country,
         COLLECT(DISTINCT focus_area) AS focus_area,
         COLLECT(DISTINCT cancer_type) AS cancer_type,
-        COLLECT(DISTINCT pg.program_acronym) AS program_acronyms,
-        COLLECT(DISTINCT pg.program_id) AS program_ids,
-        COLLECT(DISTINCT program_names) AS program_names,
-        apoc.text.join(COLLECT(DISTINCT apoc.text.regreplace(apoc.text.clean(program_names), '[^\\p{Alpha}0-9]', '')), '') AS program_names_sort,
+        apoc.text.join(COLLECT(DISTINCT pg.program_acronym), ';') AS program_acronyms,
+        apoc.text.join(COLLECT(DISTINCT pg.program_id), ';') AS program_ids,
+        apoc.text.join(COLLECT(DISTINCT pg.program_name), ';') AS program_names,
+        apoc.text.join(COLLECT(DISTINCT apoc.text.regreplace(apoc.text.clean(pg.program_name), '[^\\p{Alpha}0-9]', '')), '') AS program_names_sort,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
           cancer_type: apoc.text.split(pg.cancer_type, ';'),
@@ -731,7 +730,7 @@ Indices:
         COLLECT(DISTINCT({
           project_id: project.project_id
         })) AS projects,
-        COLLECT(DISTINCT project.project_id) AS project_ids,
+        apoc.text.join(COLLECT(DISTINCT project.project_id), ';') AS project_ids,
         apoc.text.regreplace(apoc.text.clean(apoc.text.join(COLLECT(DISTINCT project.project_ids), '')), '[^\\p{Alpha}0-9]', '') AS project_ids_sort
       RETURN
         pmid,
