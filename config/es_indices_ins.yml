@@ -662,7 +662,7 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
-      authors:
+      authors_sort:
         type: keyword
       publication_date:
         type: date
