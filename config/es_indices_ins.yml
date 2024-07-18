@@ -731,7 +731,7 @@ Indices:
           project_id: project.project_id
         })) AS projects,
         apoc.text.join(COLLECT(DISTINCT project.project_id), ';') AS project_ids,
-        apoc.text.regreplace(apoc.text.clean(apoc.text.join(COLLECT(DISTINCT project.project_ids), '')), '[^\\p{Alpha}0-9]', '') AS project_ids_sort
+        apoc.text.join(COLLECT(DISTINCT project.project_id), '') AS project_ids_sort
       RETURN
         pmid,
         pmid_sort,
