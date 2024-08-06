@@ -760,7 +760,7 @@ Indices:
           project_id: project.project_id
         })) AS projects,
         apoc.text.join(COLLECT(DISTINCT project.project_id), ';') AS project_ids,
-         apoc.text.regreplace(apoc.text.clean(apoc.text.join(COLLECT(DISTINCT project.project_id), '')), '[^\\p{Alpha}0-9]', '') AS project_ids_sort
+        apoc.text.regreplace(apoc.text.clean(apoc.text.join(COLLECT(DISTINCT project.project_id), '')), '[^\\p{Alpha}0-9]', '') AS project_ids_sort
       RETURN
         pmid,
         pmid_sort,
@@ -775,3 +775,242 @@ Indices:
         projects,
         project_ids,
         project_ids_sort;
+
+  # [DRAFT] Datasets
+  - index_name: datasets
+    type: neo4j
+    mapping:
+      dataset_title:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+      description:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+      dbGaP_phs:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+      dbGaP_URL:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+      PI_name: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+      GPA: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+      dataset_doc: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+      dataset_pmid: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      funding_source: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      release_date:
+        type: date
+        format: yyyy-MM-dd
+      limitations_for_reuse: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      assay_method: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      data_type: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      study_type: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      analyte_type: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      primary_disease: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      anatomic_site: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      age: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      sex: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      ethnicity: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      race: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      sample_is_normal: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      participant_count:
+        type: integer
+      sample_count:
+        type: integer
+      ancestry: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      study_links: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      related_genes: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      related_diseases: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      related_terms: # list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      # Programs
+      programs:
+        type: nested
+        properties:
+          name:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+            fields:
+              sort:
+                type: keyword
+                normalizer: lowercase
+    cypher_query: >
+      MATCH (d:dataset)
+      WITH
+        d.dataset_title AS dataset_title,
+        d.description AS description,
+        d.dbGaP_phs AS dbGaP_phs,
+        d.dbGaP_URL AS dbGaP_URL,
+        d.PI_name AS PI_name,
+        d.GPA AS GPA,
+        d.dataset_doc AS dataset_doc,
+        d.dataset_pmid AS dataset_pmid,
+        d.funding_source AS funding_source,
+        d.release_date AS release_date,
+        d.limitations_for_reuse AS limitations_for_reuse,
+        d.assay_method AS assay_method,
+        d.data_type AS data_type,
+        d.study_type AS study_type,
+        d.analyte_type AS analyte_type,
+        d.primary_disease AS primary_disease,
+        d.anatomic_site AS anatomic_site,
+        d.age AS age,
+        d.sex AS sex,
+        d.ethnicity AS ethnicity,
+        d.race AS race,
+        d.sample_is_normal AS sample_is_normal,
+        d.participant_count AS participant_count,
+        d.sample_count AS sample_count,
+        d.ancestry AS ancestry,
+        d.study_links AS study_links,
+        d.related_genes AS related_genes,
+        d.related_diseases AS related_diseases,
+        d.related_terms AS related_terms,
+        {
+          name: "[TODO]"
+        } AS programs
+      RETURN
+        dataset_title,
+        description,
+        dbGaP_phs,
+        dbGaP_URL,
+        PI_name,
+        GPA,
+        dataset_doc,
+        dataset_pmid,
+        funding_source,
+        release_date,
+        limitations_for_reuse,
+        assay_method,
+        data_type,
+        study_type,
+        analyte_type,
+        primary_disease,
+        anatomic_site,
+        age,
+        sex,
+        ethnicity,
+        race,
+        sample_is_normal,
+        participant_count,
+        sample_count,
+        ancestry,
+        study_links,
+        related_genes,
+        related_diseases,
+        related_terms,
+        programs;

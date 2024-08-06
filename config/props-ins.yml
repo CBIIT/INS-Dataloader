@@ -3,9 +3,10 @@ Properties:
   rel_prop_delimiter: "$"
 
   plurals:
+    dataset: datasets
+    grant: grants
     program: programs
     project: projects
-    grant: grants
     publication: publications
 
   type_mapping:
@@ -21,7 +22,8 @@ Properties:
     TBD: String
 
   id_fields:
+    dataset: dbGaP_phs
+    grant: grant_id
     program: program_id
     project: project_id
-    grant: grant_id
     publication: pmid
