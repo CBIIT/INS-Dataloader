@@ -781,125 +781,174 @@ Indices:
     type: neo4j
     mapping:
       dataset_title:
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
+            normalizer: lowercase
       description:
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
+            normalizer: lowercase
       dbGaP_phs:
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
+            normalizer: lowercase
       dbGaP_URL:
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
+            normalizer: lowercase
       PI_name: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
+            normalizer: lowercase
       GPA: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
+            normalizer: lowercase
       dataset_doc: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
+            normalizer: lowercase
       dataset_pmid: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       funding_source: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       release_date:
         type: date
         format: yyyy-MM-dd
       limitations_for_reuse: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       assay_method: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       data_type: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       study_type: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       analyte_type: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       primary_disease: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       anatomic_site: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       age: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       sex: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       ethnicity: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       race: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       sample_is_normal: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       participant_count:
@@ -907,33 +956,43 @@ Indices:
       sample_count:
         type: integer
       ancestry: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       study_links: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       related_genes: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       related_diseases: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       related_terms: # list
-        type: keyword
+        type: text
+        analyzer: standard_analyzer
+        search_analyzer: keyword_analyzer
         fields:
-          sort:
+          raw:
             type: keyword
             normalizer: lowercase
       # Programs
