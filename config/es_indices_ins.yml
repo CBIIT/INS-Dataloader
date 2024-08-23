@@ -953,8 +953,14 @@ Indices:
             normalizer: lowercase
       participant_count:
         type: integer
+        fields:
+          sort:
+            type: integer
       sample_count:
         type: integer
+        fields:
+          sort:
+            type: integer
       ancestry: # list
         type: text
         analyzer: standard_analyzer
