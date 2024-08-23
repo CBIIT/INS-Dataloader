@@ -785,7 +785,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       description:
@@ -793,7 +793,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       dbGaP_phs:
@@ -801,7 +801,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       dbGaP_URL:
@@ -809,7 +809,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       PI_name: # list
@@ -817,7 +817,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       GPA: # list
@@ -825,7 +825,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       dataset_doc: # list
@@ -833,7 +833,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       dataset_pmid: # list
@@ -841,7 +841,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       funding_source: # list
@@ -849,7 +849,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       release_date:
@@ -860,7 +860,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       assay_method: # list
@@ -868,7 +868,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       data_type: # list
@@ -876,7 +876,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       study_type: # list
@@ -884,7 +884,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       analyte_type: # list
@@ -892,7 +892,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       primary_disease: # list
@@ -900,7 +900,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       anatomic_site: # list
@@ -908,7 +908,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       age: # list
@@ -916,7 +916,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       sex: # list
@@ -924,7 +924,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       ethnicity: # list
@@ -932,7 +932,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       race: # list
@@ -940,7 +940,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       sample_is_normal: # list
@@ -948,19 +948,25 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       participant_count:
         type: integer
+        fields:
+          sort:
+            type: integer
       sample_count:
         type: integer
+        fields:
+          sort:
+            type: integer
       ancestry: # list
         type: text
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       study_links: # list
@@ -968,7 +974,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       related_genes: # list
@@ -976,7 +982,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       related_diseases: # list
@@ -984,7 +990,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       related_terms: # list
@@ -992,7 +998,7 @@ Indices:
         analyzer: standard_analyzer
         search_analyzer: keyword_analyzer
         fields:
-          raw:
+          sort:
             type: keyword
             normalizer: lowercase
       # Programs
