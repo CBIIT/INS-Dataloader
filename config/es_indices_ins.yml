@@ -895,27 +895,7 @@ Indices:
             type: text
             analyzer: standard_analyzer
             search_analyzer: keyword_analyzer
-      data_type: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
       study_type: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
-      analyte_type: # list
         type: keyword
         fields:
           sort:
@@ -935,66 +915,6 @@ Indices:
             type: text
             analyzer: standard_analyzer
             search_analyzer: keyword_analyzer
-      anatomic_site: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
-      age: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
-      sex: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
-      ethnicity: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
-      race: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
-      sample_is_normal: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
       participant_count:
         type: integer
         fields:
@@ -1005,16 +925,6 @@ Indices:
         fields:
           sort:
             type: integer
-      ancestry: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
       study_links: # list
         type: keyword
         fields:
@@ -1073,19 +983,10 @@ Indices:
         END AS release_date,
         d.limitations_for_reuse AS limitations_for_reuse,
         d.assay_method AS assay_method,
-        d.data_type AS data_type,
         d.study_type AS study_type,
-        d.analyte_type AS analyte_type,
         d.primary_disease AS primary_disease,
-        d.anatomic_site AS anatomic_site,
-        d.age AS age,
-        d.sex AS sex,
-        d.ethnicity AS ethnicity,
-        d.race AS race,
-        d.sample_is_normal AS sample_is_normal,
         d.participant_count AS participant_count,
         d.sample_count AS sample_count,
-        d.ancestry AS ancestry,
         d.study_links AS study_links,
         d.related_genes AS related_genes,
         d.related_diseases AS related_diseases,
@@ -1103,19 +1004,10 @@ Indices:
         release_date,
         limitations_for_reuse,
         assay_method,
-        data_type,
         study_type,
-        analyte_type,
         primary_disease,
-        anatomic_site,
-        age,
-        sex,
-        ethnicity,
-        race,
-        sample_is_normal,
         participant_count,
         sample_count,
-        ancestry,
         study_links,
         related_genes,
         related_diseases,
