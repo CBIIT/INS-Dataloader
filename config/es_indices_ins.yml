@@ -519,7 +519,7 @@ Indices:
             normalizer: lowercase
       project_title_sort:
         type: keyword
-      abstract_text:
+      project_abstract_text:
         type: keyword
         fields:
           sort:
@@ -531,33 +531,33 @@ Indices:
       project_end_date:
         type: date
         format: yyyy-MM-dd
-      opportunity_number:
+      project_opportunity_number:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      org_name:
+      project_org_name:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      org_name_sort:
+      project_org_name_sort:
         type: keyword
-      org_city:
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-      org_state:
+      project_org_city:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      org_country:
+      project_org_state:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      project_org_country:
         type: keyword
         fields:
           sort:
@@ -622,15 +622,15 @@ Indices:
         apoc.text.regreplace(apoc.text.clean(pj.project_id), '[^\\p{Alpha}0-9]', '') AS project_id_sort,
         pj.project_title AS project_title,
         apoc.text.regreplace(apoc.text.clean(pj.project_title), '[^\\p{Alpha}0-9]', '') AS project_title_sort,
-        pj.abstract_text AS abstract_text,
+        pj.project_abstract_text AS project_abstract_text,
         (CASE pj.project_start_date WHEN '' THEN NULL ELSE pj.project_start_date END) AS project_start_date,
         (CASE pj.project_end_date WHEN '' THEN NULL ELSE pj.project_end_date END) AS project_end_date,
-        pj.opportunity_number AS opportunity_number,
-        pj.org_name AS org_name,
-        apoc.text.regreplace(apoc.text.clean(pj.org_name), '[^\\p{Alpha}0-9]', '') AS org_name_sort,
-        pj.org_city AS org_city,
-        pj.org_state AS org_state,
-        pj.org_country AS org_country,
+        pj.project_opportunity_number AS project_opportunity_number,
+        pj.project_org_name AS project_org_name,
+        apoc.text.regreplace(apoc.text.clean(pj.project_org_name), '[^\\p{Alpha}0-9]', '') AS project_org_name_sort,
+        pj.project_org_city AS project_org_city,
+        pj.project_org_state AS project_org_state,
+        pj.project_org_country AS project_org_country,
         COLLECT(DISTINCT focus_area) AS focus_area,
         COLLECT(DISTINCT cancer_type) AS cancer_type,
         apoc.text.join(COLLECT(DISTINCT pg.program_acronym), ';') AS program_acronyms,
@@ -648,15 +648,15 @@ Indices:
         project_id_sort,
         project_title,
         project_title_sort,
-        abstract_text,
+        project_abstract_text,
         project_start_date,
         project_end_date,
-        opportunity_number,
-        org_name,
-        org_name_sort,
-        org_city,
-        org_state,
-        org_country,
+        project_opportunity_number,
+        project_org_name,
+        project_org_name_sort,
+        project_org_city,
+        project_org_state,
+        project_org_country,
         focus_area,
         cancer_type,
         program_acronyms,
