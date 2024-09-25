@@ -677,13 +677,13 @@ Indices:
             normalizer: lowercase
       pmid_sort:
         type: keyword
-      title:
+      publication_title:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      title_sort:
+      publication_title_sort:
         type: keyword
       authors: # list
         type: keyword
@@ -743,8 +743,8 @@ Indices:
       WITH
         pb.pmid AS pmid,
         apoc.text.regreplace(apoc.text.clean(pb.pmid), '[^\\p{Alpha}0-9]', '') AS pmid_sort,
-        pb.title AS title,
-        apoc.text.regreplace(apoc.text.clean(pb.title), '[^\\p{Alpha}0-9]', '') AS title_sort,
+        pb.publication_title AS publication_title,
+        apoc.text.regreplace(apoc.text.clean(pb.publication_title), '[^\\p{Alpha}0-9]', '') AS publication_title_sort,
         pb.authors AS authors,
         apoc.text.regreplace(apoc.text.clean(pb.authors), '[^\\p{Alpha}0-9]', '') AS authors_sort,
         (CASE pb.publication_date WHEN '' THEN NULL ELSE pb.publication_date END) AS publication_date,
@@ -764,8 +764,8 @@ Indices:
       RETURN
         pmid,
         pmid_sort,
-        title,
-        title_sort,
+        publication_title,
+        publication_title_sort,
         authors,
         authors_sort,
         publication_date,
