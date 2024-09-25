@@ -94,7 +94,7 @@ Indices:
             normalizer: lowercase
       grant_title_sort:
         type: keyword
-      abstract_text:
+      grant_abstract_text:
         type: keyword
         fields:
           sort:
@@ -129,37 +129,37 @@ Indices:
       award_notice_date:
         type: date
         format: yyyy-MM-dd
-      project_start_date:
+      grant_start_date:
         type: date
         format: yyyy-MM-dd
-      project_end_date:
+      grant_end_date:
         type: date
         format: yyyy-MM-dd
-      opportunity_number:
+      grant_opportunity_number:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      org_name:
+      grant_org_name:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      org_city:
+      grant_org_city:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      org_state:
+      grant_org_state:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      org_country:
+      grant_org_country:
         type: keyword
         fields:
           sort:
@@ -198,7 +198,7 @@ Indices:
         g.fiscal_year AS fiscal_year,
         g.grant_title AS grant_title,
         apoc.text.regreplace(apoc.text.clean(g.grant_title), '[^\\p{Alpha}0-9]', '') AS grant_title_sort,
-        g.abstract_text AS abstract_text,
+        g.grant_abstract_text AS grant_abstract_text,
         g.keywords AS keywords,
         g.principal_investigators AS principal_investigators,
         apoc.text.regreplace(apoc.text.clean(g.principal_investigators), '[^\\p{Alpha}0-9]', '') AS principal_investigators_sort,
@@ -207,13 +207,13 @@ Indices:
         g.award_amount AS award_amount,
         g.nci_funded_amount AS nci_funded_amount,
         (CASE g.award_notice_date WHEN '' THEN NULL ELSE g.award_notice_date END) AS award_notice_date,
-        (CASE g.project_start_date WHEN '' THEN NULL ELSE g.project_start_date END) AS project_start_date,
-        (CASE g.project_end_date WHEN '' THEN NULL ELSE g.project_end_date END) AS project_end_date,
-        g.opportunity_number AS opportunity_number,
-        g.org_name AS org_name,
-        g.org_city AS org_city,
-        g.org_state AS org_state,
-        g.org_country AS org_country,
+        (CASE g.grant_start_date WHEN '' THEN NULL ELSE g.grant_start_date END) AS grant_start_date,
+        (CASE g.grant_end_date WHEN '' THEN NULL ELSE g.grant_end_date END) AS grant_end_date,
+        g.grant_opportunity_number AS grant_opportunity_number,
+        g.grant_org_name AS grant_org_name,
+        g.grant_org_city AS grant_org_city,
+        g.grant_org_state AS grant_org_state,
+        g.grant_org_country AS grant_org_country,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
           cancer_type: apoc.text.split(pg.cancer_type, ';'),
@@ -229,7 +229,7 @@ Indices:
         fiscal_year,
         grant_title,
         grant_title_sort,
-        abstract_text,
+        grant_abstract_text,
         keywords,
         principal_investigators,
         principal_investigators_sort,
@@ -238,13 +238,13 @@ Indices:
         award_amount,
         nci_funded_amount,
         award_notice_date,
-        project_start_date,
-        project_end_date,
-        opportunity_number,
-        org_name,
-        org_city,
-        org_state,
-        org_country,
+        grant_start_date,
+        grant_end_date,
+        grant_opportunity_number,
+        grant_org_name,
+        grant_org_city,
+        grant_org_state,
+        grant_org_country,
         programs,
         project_id,
         project_id_sort;
@@ -313,13 +313,13 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
-      doc: # list
+      program_doc: # list
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      doc_str:
+      program_doc_str:
         type: keyword
         fields:
           sort:
@@ -412,8 +412,8 @@ Indices:
         apoc.coll.sort(apoc.text.split(pg.cancer_type, ';')) AS cancer_type,
         pg.cancer_type AS cancer_type_str,
         apoc.text.regreplace(apoc.text.clean(pg.cancer_type), '[^\\p{Alpha}0-9]', '') AS cancer_type_sort,
-        apoc.text.split(pg.doc, ';') AS doc,
-        pg.doc AS doc_str,
+        apoc.text.split(pg.program_doc, ';') AS program_doc,
+        pg.program_doc AS program_doc_str,
         pg.contact_pi AS contact_pi,
         pg.contact_pi_email AS contact_pi_email,
         pg.contact_nih AS contact_nih,
@@ -441,8 +441,8 @@ Indices:
         cancer_type,
         cancer_type_str,
         cancer_type_sort,
-        doc,
-        doc_str,
+        program_doc,
+        program_doc_str,
         contact_pi,
         contact_pi_email,
         contact_nih,
@@ -1067,7 +1067,10 @@ Indices:
         d.dataset_doc AS dataset_doc,
         d.dataset_pmid AS dataset_pmid,
         d.funding_source AS funding_source,
-        d.release_date AS release_date,
+        CASE d.release_date
+          WHEN '' THEN NULL
+          ELSE d.release_date
+        END AS release_date,
         d.limitations_for_reuse AS limitations_for_reuse,
         d.assay_method AS assay_method,
         d.data_type AS data_type,
