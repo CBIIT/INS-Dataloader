@@ -94,7 +94,7 @@ Indices:
             normalizer: lowercase
       grant_title_sort:
         type: keyword
-      abstract_text:
+      grant_abstract_text:
         type: keyword
         fields:
           sort:
@@ -129,37 +129,37 @@ Indices:
       award_notice_date:
         type: date
         format: yyyy-MM-dd
-      project_start_date:
+      grant_start_date:
         type: date
         format: yyyy-MM-dd
-      project_end_date:
+      grant_end_date:
         type: date
         format: yyyy-MM-dd
-      opportunity_number:
+      grant_opportunity_number:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      org_name:
+      grant_org_name:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      org_city:
+      grant_org_city:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      org_state:
+      grant_org_state:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      org_country:
+      grant_org_country:
         type: keyword
         fields:
           sort:
@@ -198,7 +198,7 @@ Indices:
         g.fiscal_year AS fiscal_year,
         g.grant_title AS grant_title,
         apoc.text.regreplace(apoc.text.clean(g.grant_title), '[^\\p{Alpha}0-9]', '') AS grant_title_sort,
-        g.abstract_text AS abstract_text,
+        g.grant_abstract_text AS grant_abstract_text,
         g.keywords AS keywords,
         g.principal_investigators AS principal_investigators,
         apoc.text.regreplace(apoc.text.clean(g.principal_investigators), '[^\\p{Alpha}0-9]', '') AS principal_investigators_sort,
@@ -207,13 +207,13 @@ Indices:
         g.award_amount AS award_amount,
         g.nci_funded_amount AS nci_funded_amount,
         (CASE g.award_notice_date WHEN '' THEN NULL ELSE g.award_notice_date END) AS award_notice_date,
-        (CASE g.project_start_date WHEN '' THEN NULL ELSE g.project_start_date END) AS project_start_date,
-        (CASE g.project_end_date WHEN '' THEN NULL ELSE g.project_end_date END) AS project_end_date,
-        g.opportunity_number AS opportunity_number,
-        g.org_name AS org_name,
-        g.org_city AS org_city,
-        g.org_state AS org_state,
-        g.org_country AS org_country,
+        (CASE g.grant_start_date WHEN '' THEN NULL ELSE g.grant_start_date END) AS grant_start_date,
+        (CASE g.grant_end_date WHEN '' THEN NULL ELSE g.grant_end_date END) AS grant_end_date,
+        g.grant_opportunity_number AS grant_opportunity_number,
+        g.grant_org_name AS grant_org_name,
+        g.grant_org_city AS grant_org_city,
+        g.grant_org_state AS grant_org_state,
+        g.grant_org_country AS grant_org_country,
         COLLECT(DISTINCT({
           focus_area: apoc.text.split(pg.focus_area, ';'),
           cancer_type: apoc.text.split(pg.cancer_type, ';'),
@@ -229,7 +229,7 @@ Indices:
         fiscal_year,
         grant_title,
         grant_title_sort,
-        abstract_text,
+        grant_abstract_text,
         keywords,
         principal_investigators,
         principal_investigators_sort,
@@ -238,13 +238,13 @@ Indices:
         award_amount,
         nci_funded_amount,
         award_notice_date,
-        project_start_date,
-        project_end_date,
-        opportunity_number,
-        org_name,
-        org_city,
-        org_state,
-        org_country,
+        grant_start_date,
+        grant_end_date,
+        grant_opportunity_number,
+        grant_org_name,
+        grant_org_city,
+        grant_org_state,
+        grant_org_country,
         programs,
         project_id,
         project_id_sort;
@@ -313,13 +313,13 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
-      doc: # list
+      program_doc: # list
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      doc_str:
+      program_doc_str:
         type: keyword
         fields:
           sort:
@@ -412,8 +412,8 @@ Indices:
         apoc.coll.sort(apoc.text.split(pg.cancer_type, ';')) AS cancer_type,
         pg.cancer_type AS cancer_type_str,
         apoc.text.regreplace(apoc.text.clean(pg.cancer_type), '[^\\p{Alpha}0-9]', '') AS cancer_type_sort,
-        apoc.text.split(pg.doc, ';') AS doc,
-        pg.doc AS doc_str,
+        apoc.text.split(pg.program_doc, ';') AS program_doc,
+        pg.program_doc AS program_doc_str,
         pg.contact_pi AS contact_pi,
         pg.contact_pi_email AS contact_pi_email,
         pg.contact_nih AS contact_nih,
@@ -441,8 +441,8 @@ Indices:
         cancer_type,
         cancer_type_str,
         cancer_type_sort,
-        doc,
-        doc_str,
+        program_doc,
+        program_doc_str,
         contact_pi,
         contact_pi_email,
         contact_nih,
@@ -519,7 +519,7 @@ Indices:
             normalizer: lowercase
       project_title_sort:
         type: keyword
-      abstract_text:
+      project_abstract_text:
         type: keyword
         fields:
           sort:
@@ -531,33 +531,33 @@ Indices:
       project_end_date:
         type: date
         format: yyyy-MM-dd
-      opportunity_number:
+      project_opportunity_number:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      org_name:
+      project_org_name:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      org_name_sort:
+      project_org_name_sort:
         type: keyword
-      org_city:
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-      org_state:
+      project_org_city:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      org_country:
+      project_org_state:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      project_org_country:
         type: keyword
         fields:
           sort:
@@ -622,15 +622,15 @@ Indices:
         apoc.text.regreplace(apoc.text.clean(pj.project_id), '[^\\p{Alpha}0-9]', '') AS project_id_sort,
         pj.project_title AS project_title,
         apoc.text.regreplace(apoc.text.clean(pj.project_title), '[^\\p{Alpha}0-9]', '') AS project_title_sort,
-        pj.abstract_text AS abstract_text,
+        pj.project_abstract_text AS project_abstract_text,
         (CASE pj.project_start_date WHEN '' THEN NULL ELSE pj.project_start_date END) AS project_start_date,
         (CASE pj.project_end_date WHEN '' THEN NULL ELSE pj.project_end_date END) AS project_end_date,
-        pj.opportunity_number AS opportunity_number,
-        pj.org_name AS org_name,
-        apoc.text.regreplace(apoc.text.clean(pj.org_name), '[^\\p{Alpha}0-9]', '') AS org_name_sort,
-        pj.org_city AS org_city,
-        pj.org_state AS org_state,
-        pj.org_country AS org_country,
+        pj.project_opportunity_number AS project_opportunity_number,
+        pj.project_org_name AS project_org_name,
+        apoc.text.regreplace(apoc.text.clean(pj.project_org_name), '[^\\p{Alpha}0-9]', '') AS project_org_name_sort,
+        pj.project_org_city AS project_org_city,
+        pj.project_org_state AS project_org_state,
+        pj.project_org_country AS project_org_country,
         COLLECT(DISTINCT focus_area) AS focus_area,
         COLLECT(DISTINCT cancer_type) AS cancer_type,
         apoc.text.join(COLLECT(DISTINCT pg.program_acronym), ';') AS program_acronyms,
@@ -648,15 +648,15 @@ Indices:
         project_id_sort,
         project_title,
         project_title_sort,
-        abstract_text,
+        project_abstract_text,
         project_start_date,
         project_end_date,
-        opportunity_number,
-        org_name,
-        org_name_sort,
-        org_city,
-        org_state,
-        org_country,
+        project_opportunity_number,
+        project_org_name,
+        project_org_name_sort,
+        project_org_city,
+        project_org_state,
+        project_org_country,
         focus_area,
         cancer_type,
         program_acronyms,
@@ -677,13 +677,13 @@ Indices:
             normalizer: lowercase
       pmid_sort:
         type: keyword
-      title:
+      publication_title:
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      title_sort:
+      publication_title_sort:
         type: keyword
       authors: # list
         type: keyword
@@ -743,8 +743,8 @@ Indices:
       WITH
         pb.pmid AS pmid,
         apoc.text.regreplace(apoc.text.clean(pb.pmid), '[^\\p{Alpha}0-9]', '') AS pmid_sort,
-        pb.title AS title,
-        apoc.text.regreplace(apoc.text.clean(pb.title), '[^\\p{Alpha}0-9]', '') AS title_sort,
+        pb.publication_title AS publication_title,
+        apoc.text.regreplace(apoc.text.clean(pb.publication_title), '[^\\p{Alpha}0-9]', '') AS publication_title_sort,
         pb.authors AS authors,
         apoc.text.regreplace(apoc.text.clean(pb.authors), '[^\\p{Alpha}0-9]', '') AS authors_sort,
         (CASE pb.publication_date WHEN '' THEN NULL ELSE pb.publication_date END) AS publication_date,
@@ -764,8 +764,8 @@ Indices:
       RETURN
         pmid,
         pmid_sort,
-        title,
-        title_sort,
+        publication_title,
+        publication_title_sort,
         authors,
         authors_sort,
         publication_date,
@@ -895,27 +895,7 @@ Indices:
             type: text
             analyzer: standard_analyzer
             search_analyzer: keyword_analyzer
-      data_type: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
       study_type: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
-      analyte_type: # list
         type: keyword
         fields:
           sort:
@@ -935,66 +915,6 @@ Indices:
             type: text
             analyzer: standard_analyzer
             search_analyzer: keyword_analyzer
-      anatomic_site: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
-      age: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
-      sex: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
-      ethnicity: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
-      race: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
-      sample_is_normal: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
       participant_count:
         type: integer
         fields:
@@ -1005,16 +925,6 @@ Indices:
         fields:
           sort:
             type: integer
-      ancestry: # list
-        type: keyword
-        fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
       study_links: # list
         type: keyword
         fields:
@@ -1067,22 +977,16 @@ Indices:
         d.dataset_doc AS dataset_doc,
         d.dataset_pmid AS dataset_pmid,
         d.funding_source AS funding_source,
-        d.release_date AS release_date,
+        CASE d.release_date
+          WHEN '' THEN NULL
+          ELSE d.release_date
+        END AS release_date,
         d.limitations_for_reuse AS limitations_for_reuse,
         d.assay_method AS assay_method,
-        d.data_type AS data_type,
         d.study_type AS study_type,
-        d.analyte_type AS analyte_type,
         d.primary_disease AS primary_disease,
-        d.anatomic_site AS anatomic_site,
-        d.age AS age,
-        d.sex AS sex,
-        d.ethnicity AS ethnicity,
-        d.race AS race,
-        d.sample_is_normal AS sample_is_normal,
         d.participant_count AS participant_count,
         d.sample_count AS sample_count,
-        d.ancestry AS ancestry,
         d.study_links AS study_links,
         d.related_genes AS related_genes,
         d.related_diseases AS related_diseases,
@@ -1100,19 +1004,10 @@ Indices:
         release_date,
         limitations_for_reuse,
         assay_method,
-        data_type,
         study_type,
-        analyte_type,
         primary_disease,
-        anatomic_site,
-        age,
-        sex,
-        ethnicity,
-        race,
-        sample_is_normal,
         participant_count,
         sample_count,
-        ancestry,
         study_links,
         related_genes,
         related_diseases,
