@@ -1,7 +1,7 @@
 # Datamodel commit fb6185a
 Settings:
   number_of_shards: 1
-  max_result_window: 5000
+  max_result_window: 60000
   max_inner_result_window: 500
   mapping.total_fields.limit: 2000
   max_ngram_diff: 30
