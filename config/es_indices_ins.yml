@@ -46,6 +46,8 @@ Indices:
   - index_name: home_stats
     type: neo4j
     mapping:
+      num_datasets:
+        type: integer
       num_grants:
         type: integer
       num_programs:
@@ -56,11 +58,13 @@ Indices:
         type: integer
     # Using OPTIONAL MATCH so that we get all Programs
     cypher_query: >
+      MATCH (d:dataset)
       MATCH (pg:program)
         OPTIONAL MATCH (pj:project)-[:projects_of_program]->(pg)
         OPTIONAL MATCH (g:grant)-[:grants_of_project]->(pj)
         OPTIONAL MATCH (pb:publication)-[:has_publication]->(pj)
       RETURN
+        COUNT(DISTINCT d) AS num_datasets,
         COUNT(DISTINCT g) AS num_grants,
         COUNT(DISTINCT pg) AS num_programs,
         COUNT(DISTINCT pj) AS num_projects,
