@@ -22,7 +22,7 @@ Properties:
     TBD: String
 
   id_fields:
-    dataset: dbGaP_phs
+    dataset: dataset_source_id
     grant: grant_id
     program: program_id
     project: project_id
