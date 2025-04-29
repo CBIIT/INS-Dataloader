@@ -1,9 +1,10 @@
-pyyaml
-neo4j==4.4.*
 boto3
-requests
 elasticsearch==7.13.*
-tqdm
-requests_aws4auth
+neo4j==4.4.*
+numpy==1.26.4
 pandas
+pyyaml
+requests
+requests_aws4auth
+tqdm
 xlsxwriter
