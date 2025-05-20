@@ -59,16 +59,21 @@ Indices:
     # Using OPTIONAL MATCH so that we get all Programs
     cypher_query: >
       MATCH (d:dataset)
+      WITH COUNT(DISTINCT d) AS num_datasets
       MATCH (pg:program)
-        OPTIONAL MATCH (pj:project)-[:projects_of_program]->(pg)
-        OPTIONAL MATCH (g:grant)-[:grants_of_project]->(pj)
-        OPTIONAL MATCH (pb:publication)-[:has_publication]->(pj)
+      WITH num_datasets, COUNT(DISTINCT pg) AS num_programs
+      OPTIONAL MATCH (pj:project)-[:projects_of_program]->(pg)
+      WITH num_datasets, num_programs, COUNT(DISTINCT pj) AS num_projects
+      OPTIONAL MATCH (g:grant)-[:grants_of_project]->(pj)
+      WITH num_datasets, num_programs, num_projects, COUNT(DISTINCT g) AS num_grants
+      OPTIONAL MATCH (pb:publication)-[:has_publication]->(pj)
+      WITH num_datasets, num_grants, num_programs, num_projects, COUNT(DISTINCT pb) AS num_publications
       RETURN
-        COUNT(DISTINCT d) AS num_datasets,
-        COUNT(DISTINCT g) AS num_grants,
-        COUNT(DISTINCT pg) AS num_programs,
-        COUNT(DISTINCT pj) AS num_projects,
-        COUNT(DISTINCT pb) AS num_publications;
+        num_datasets,
+        num_grants,
+        num_programs,
+        num_projects,
+        num_publications;
 
   # Grants are connected to Programs through Projects
   - index_name: grants
@@ -786,6 +791,16 @@ Indices:
   - index_name: datasets
     type: neo4j
     mapping:
+      dataset_maximum_age_at_baseline:
+        type: integer
+        fields:
+          sort:
+            type: integer
+      dataset_minimum_age_at_baseline:
+        type: integer
+        fields:
+          sort:
+            type: integer
       dataset_title:
         type: keyword
         fields:
@@ -816,6 +831,16 @@ Indices:
             type: text
             analyzer: standard_analyzer
             search_analyzer: keyword_analyzer
+      dataset_year_enrollment_ended:
+        type: integer
+        fields:
+          sort:
+            type: integer
+      dataset_year_enrollment_started:
+        type: integer
+        fields:
+          sort:
+            type: integer
       description:
         type: keyword
         fields:
@@ -992,9 +1017,13 @@ Indices:
     cypher_query: >
       MATCH (d:dataset)
       WITH
+        d.dataset_maximum_age_at_baseline AS dataset_maximum_age_at_baseline,
+        d.dataset_minimum_age_at_baseline AS dataset_minimum_age_at_baseline,
         d.dataset_title AS dataset_title,
         d.dataset_uuid AS dataset_uuid,
         d.dataset_source_repo AS dataset_source_repo,
+        d.dataset_year_enrollment_ended AS dataset_year_enrollment_ended,
+        d.dataset_year_enrollment_started AS dataset_year_enrollment_started,
         d.description AS description,
         d.dataset_source_id AS dataset_source_id,
         d.dataset_source_url AS dataset_source_url,
@@ -1018,9 +1047,13 @@ Indices:
         d.related_diseases AS related_diseases,
         d.related_terms AS related_terms
       RETURN
+        dataset_maximum_age_at_baseline,
+        dataset_minimum_age_at_baseline,
         dataset_title,
         dataset_uuid,
         dataset_source_repo,
+        dataset_year_enrollment_ended,
+        dataset_year_enrollment_started,
         description,
         dataset_source_id,
         dataset_source_url,
