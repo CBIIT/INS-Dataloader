@@ -817,10 +817,6 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
       dataset_source_repo:
         type: keyword
         fields:
@@ -887,10 +883,6 @@ Indices:
           sort:
             type: keyword
             normalizer: lowercase
-          search:
-            type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
       dataset_doc: # list
         type: keyword
         fields:
