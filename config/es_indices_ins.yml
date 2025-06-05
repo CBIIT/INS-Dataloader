@@ -1009,13 +1009,25 @@ Indices:
     cypher_query: >
       MATCH (d:dataset)
       WITH
-        d.dataset_maximum_age_at_baseline AS dataset_maximum_age_at_baseline,
-        d.dataset_minimum_age_at_baseline AS dataset_minimum_age_at_baseline,
+        CASE d.dataset_maximum_age_at_baseline
+          WHEN '' THEN NULL
+          ELSE d.dataset_maximum_age_at_baseline
+        END AS dataset_maximum_age_at_baseline,
+        CASE d.dataset_minimum_age_at_baseline
+          WHEN '' THEN NULL
+          ELSE d.dataset_minimum_age_at_baseline
+        END AS dataset_minimum_age_at_baseline,
         d.dataset_title AS dataset_title,
         d.dataset_uuid AS dataset_uuid,
         d.dataset_source_repo AS dataset_source_repo,
-        d.dataset_year_enrollment_ended AS dataset_year_enrollment_ended,
-        d.dataset_year_enrollment_started AS dataset_year_enrollment_started,
+        CASE d.dataset_year_enrollment_ended
+          WHEN '' THEN NULL
+          ELSE d.dataset_year_enrollment_ended
+        END AS dataset_year_enrollment_ended,
+        CASE d.dataset_year_enrollment_started
+          WHEN '' THEN NULL
+          ELSE d.dataset_year_enrollment_started
+        END AS dataset_year_enrollment_started,
         d.description AS description,
         d.dataset_source_id AS dataset_source_id,
         d.dataset_source_url AS dataset_source_url,
@@ -1032,8 +1044,14 @@ Indices:
         d.assay_method AS assay_method,
         d.study_type AS study_type,
         d.primary_disease AS primary_disease,
-        d.participant_count AS participant_count,
-        d.sample_count AS sample_count,
+        CASE d.participant_count
+          WHEN '' THEN NULL
+          ELSE d.participant_count
+        END AS participant_count,
+        CASE d.sample_count
+          WHEN '' THEN NULL
+          ELSE d.sample_count
+        END AS sample_count,
         d.study_links AS study_links,
         d.related_genes AS related_genes,
         d.related_diseases AS related_diseases,
