@@ -3,25 +3,27 @@ Properties:
   rel_prop_delimiter: "$"
 
   plurals:
+    dataset: datasets
+    grant: grants
     program: programs
     project: projects
-    grant: grants
     publication: publications
 
   type_mapping:
     list: String
     string: String
-    Float: Float
-    Int: Int
+    number: Float
+    integer: Int
     boolean: Boolean
     array: Array
     object: Object
     datetime: DateTime
-    Date: Date
+    date: Date
     TBD: String
 
   id_fields:
+    dataset: dataset_source_id
+    grant: grant_id
     program: program_id
     project: project_id
-    grant: grant_id
     publication: pmid

@@ -1,4 +1,6 @@
+.devcontainer/
 .idea/
+.python-version
 .vscode/
 **.DS_Store
 *.pyc
