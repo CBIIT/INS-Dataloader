@@ -804,13 +804,12 @@ Indices:
       dataset_title:
         type: keyword
         fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
           search:
             type: text
             analyzer: standard_analyzer
             search_analyzer: keyword_analyzer
+      dataset_title_sort:
+        type: keyword
       dataset_uuid:
         type: keyword
         fields:
@@ -1018,6 +1017,7 @@ Indices:
           ELSE d.dataset_minimum_age_at_baseline
         END AS dataset_minimum_age_at_baseline,
         d.dataset_title AS dataset_title,
+        apoc.text.regreplace(apoc.text.clean(d.dataset_title), '[^\\p{Alpha}0-9]', '') AS dataset_title_sort, // clean() applies lowercase
         d.dataset_uuid AS dataset_uuid,
         d.dataset_source_repo AS dataset_source_repo,
         CASE d.dataset_year_enrollment_ended
@@ -1060,6 +1060,7 @@ Indices:
         dataset_maximum_age_at_baseline,
         dataset_minimum_age_at_baseline,
         dataset_title,
+        dataset_title_sort,
         dataset_uuid,
         dataset_source_repo,
         dataset_year_enrollment_ended,
