@@ -4,6 +4,7 @@ Properties:
 
   plurals:
     dataset: datasets
+    file: files
     grant: grants
     program: programs
     project: projects
@@ -23,6 +24,7 @@ Properties:
 
   id_fields:
     dataset: dataset_source_id
+    file: file_id
     grant: grant_id
     program: program_id
     project: project_id
