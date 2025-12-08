@@ -1108,3 +1108,101 @@ Indices:
         related_genes,
         related_diseases,
         related_terms;
+
+  - index_name: files
+    type: neo4j
+    mapping:
+      dataset_source_id: # Identifies the dataset in lieu of dataset_uuid, for now
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+      file_id:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+      file_name:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+      file_type:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+      file_url: # not required
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+      file_url_repo_prefix: # formatted from dataset_source_repo
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+      access_level:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+    cypher_query: >
+      MATCH (f:file)-[:files_of_dataset]->(d:dataset)
+      WITH
+        d.dataset_source_id AS dataset_source_id,
+        CASE d.dataset_source_repo
+          WHEN 'CTD² Network' THEN 'CTD2'
+          ELSE d.dataset_source_repo
+        END AS file_url_repo_prefix,
+        f.file_id AS file_id,
+        f.file_name AS file_name,
+        CASE f.file_type
+          WHEN '' THEN NULL
+          ELSE f.file_type
+        END AS file_type,
+        f.file_url AS file_url,
+        f.access_level AS access_level
+      RETURN
+        dataset_source_id,
+        file_url_repo_prefix,
+        file_id,
+        file_name,
+        file_type,
+        file_url,
+        access_level;
