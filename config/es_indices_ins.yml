@@ -804,13 +804,12 @@ Indices:
       dataset_title:
         type: keyword
         fields:
-          sort:
-            type: keyword
-            normalizer: lowercase
           search:
             type: text
             analyzer: standard_analyzer
             search_analyzer: keyword_analyzer
+      dataset_title_sort:
+        type: keyword
       dataset_uuid:
         type: keyword
         fields:
@@ -847,6 +846,16 @@ Indices:
             type: text
             analyzer: standard_analyzer
             search_analyzer: keyword_analyzer
+      experimental_approaches: # not required
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
       dataset_source_id:
         type: keyword
         fields:
@@ -858,6 +867,16 @@ Indices:
             analyzer: standard_analyzer
             search_analyzer: keyword_analyzer
       dataset_source_url:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+      institute: # not required
         type: keyword
         fields:
           sort:
@@ -1018,6 +1037,7 @@ Indices:
           ELSE d.dataset_minimum_age_at_baseline
         END AS dataset_minimum_age_at_baseline,
         d.dataset_title AS dataset_title,
+        apoc.text.regreplace(apoc.text.clean(d.dataset_title), '[^\\p{Alpha}0-9]', '') AS dataset_title_sort, // clean() applies lowercase
         d.dataset_uuid AS dataset_uuid,
         d.dataset_source_repo AS dataset_source_repo,
         CASE d.dataset_year_enrollment_ended
@@ -1029,8 +1049,10 @@ Indices:
           ELSE d.dataset_year_enrollment_started
         END AS dataset_year_enrollment_started,
         d.description AS description,
+        d.experimental_approaches AS experimental_approaches,
         d.dataset_source_id AS dataset_source_id,
         d.dataset_source_url AS dataset_source_url,
+        d.institute AS institute,
         d.PI_name AS PI_name,
         d.GPA AS GPA,
         d.dataset_doc AS dataset_doc,
@@ -1060,13 +1082,16 @@ Indices:
         dataset_maximum_age_at_baseline,
         dataset_minimum_age_at_baseline,
         dataset_title,
+        dataset_title_sort,
         dataset_uuid,
         dataset_source_repo,
         dataset_year_enrollment_ended,
         dataset_year_enrollment_started,
         description,
+        experimental_approaches,
         dataset_source_id,
         dataset_source_url,
+        institute,
         PI_name,
         GPA,
         dataset_doc,
@@ -1083,3 +1108,101 @@ Indices:
         related_genes,
         related_diseases,
         related_terms;
+
+  - index_name: files
+    type: neo4j
+    mapping:
+      dataset_source_id: # Identifies the dataset in lieu of dataset_uuid, for now
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+      file_id:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+      file_name:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+      file_type:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+      file_url: # not required
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+      file_url_repo_prefix: # formatted from dataset_source_repo
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+      access_level:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: standard_analyzer
+            search_analyzer: keyword_analyzer
+    cypher_query: >
+      MATCH (f:file)-[:files_of_dataset]->(d:dataset)
+      WITH
+        d.dataset_source_id AS dataset_source_id,
+        CASE d.dataset_source_repo
+          WHEN 'CTD² Network' THEN 'CTD2'
+          ELSE d.dataset_source_repo
+        END AS file_url_repo_prefix,
+        f.file_id AS file_id,
+        f.file_name AS file_name,
+        CASE f.file_type
+          WHEN '' THEN NULL
+          ELSE f.file_type
+        END AS file_type,
+        f.file_url AS file_url,
+        f.access_level AS access_level
+      RETURN
+        dataset_source_id,
+        file_url_repo_prefix,
+        file_id,
+        file_name,
+        file_type,
+        file_url,
+        access_level;
