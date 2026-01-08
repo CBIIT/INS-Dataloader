@@ -8,6 +8,7 @@ from neo4j import GraphDatabase
 
 
 
+@unittest.skipIf('NEO_PASSWORD' not in os.environ, "NEO_PASSWORD environment variable not set")
 class TestLoader(unittest.TestCase):
     def setUp(self):
         test_dir = os.path.dirname(os.path.abspath(__file__))

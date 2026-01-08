@@ -9,6 +9,7 @@ from config import BentoConfig
 from data_loader import DataLoader
 
 
+@unittest.skipIf('NEO_PASSWORD' not in os.environ, "NEO_PASSWORD environment variable not set")
 class TestLambda(unittest.TestCase):
     def setUp(self):
         test_dir = os.path.dirname(os.path.abspath(__file__))
