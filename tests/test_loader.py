@@ -10,22 +10,26 @@ from neo4j import GraphDatabase
 
 class TestLoader(unittest.TestCase):
     def setUp(self):
+        test_dir = os.path.dirname(os.path.abspath(__file__))
         uri = 'bolt://localhost:7687'
         user = 'neo4j'
         password = os.environ['NEO_PASSWORD']
 
         self.driver = GraphDatabase.driver(uri, auth = (user, password))
-        self.data_folder = 'data/COTC007B'
-        props = Props('../config/props-icdc.yml')
-        self.schema = ICDC_Schema(['data/icdc-model.yml', 'data/icdc-model-props.yml'], props)
+        self.data_folder = os.path.join(test_dir, 'data', 'COTC007B')
+        props = Props(os.path.join(os.path.dirname(test_dir), 'config', 'props-ins.yml'))
+        self.schema = ICDC_Schema([
+            os.path.join(test_dir, 'data', 'icdc-model.yml'),
+            os.path.join(test_dir, 'data', 'icdc-model-props.yml')
+        ], props)
         self.log = get_logger('Test Loader')
         self.loader = DataLoader(self.driver, self.schema)
         self.file_list = [
-            "data/Dataset/COP-program.txt",
-            "data/Dataset/NCATS-COP01-case.txt",
-            "data/Dataset/NCATS-COP01-diagnosis.txt",
-            "data/Dataset/NCATS-COP01_cohort_file.txt",
-            "data/Dataset/NCATS-COP01_study_file.txt"
+            os.path.join(test_dir, "data", "Dataset", "COP-program.txt"),
+            os.path.join(test_dir, "data", "Dataset", "NCATS-COP01-case.txt"),
+            os.path.join(test_dir, "data", "Dataset", "NCATS-COP01-diagnosis.txt"),
+            os.path.join(test_dir, "data", "Dataset", "NCATS-COP01_cohort_file.txt"),
+            os.path.join(test_dir, "data", "Dataset", "NCATS-COP01_study_file.txt")
         ]
 
     def test_remove_traling_slash(self):
@@ -45,14 +49,16 @@ class TestLoader(unittest.TestCase):
     def test_validate_parents_exist_in_file(self):
         load_result = self.loader.load(self.file_list, True, False, 'upsert', False, 1)
         self.assertIsInstance(load_result, dict, msg='Load data failed!')
-        result = self.loader.validate_parents_exist_in_file('data/pathology-reports-failure.txt', 100)
+        test_dir = os.path.dirname(os.path.abspath(__file__))
+        result = self.loader.validate_parents_exist_in_file(os.path.join(test_dir, 'data', 'pathology-reports-failure.txt'), 100)
         self.assertFalse(result)
-        result = self.loader.validate_parents_exist_in_file('data/pathology-reports-success.txt', 100)
+        result = self.loader.validate_parents_exist_in_file(os.path.join(test_dir, 'data', 'pathology-reports-success.txt'), 100)
         self.assertTrue(result)
 
     def test_duplicated_ids(self):
-        self.assertTrue(self.loader.validate_file('data/Dataset/NCATS-COP01-case.txt', 10))
-        self.assertFalse(self.loader.validate_file('data/NCATS01-case-dup.txt', 10))
+        test_dir = os.path.dirname(os.path.abspath(__file__))
+        self.assertTrue(self.loader.validate_file(os.path.join(test_dir, 'data', 'Dataset', 'NCATS-COP01-case.txt'), 10))
+        self.assertFalse(self.loader.validate_file(os.path.join(test_dir, 'data', 'NCATS01-case-dup.txt'), 10))
 
     def test_get_signature(self):
         self.assertEqual(self.loader.get_signature({}), '{  }')

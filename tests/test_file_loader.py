@@ -11,24 +11,28 @@ from data_loader import DataLoader
 
 class TestLambda(unittest.TestCase):
     def setUp(self):
-        with open('data/lambda/event1.json') as inf:
+        test_dir = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(test_dir, 'data', 'lambda', 'event1.json')) as inf:
             self.event = json.load(inf)
         uri = 'bolt://localhost:7687'
         user = 'neo4j'
         password = os.environ['NEO_PASSWORD']
 
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
-        props = Props('../config/props-icdc.yml')
-        self.schema = ICDC_Schema(['data/icdc-model.yml', 'data/icdc-model-props.yml'], props)
-        config = BentoConfig('../config/config.ini')
+        props = Props(os.path.join(os.path.dirname(test_dir), 'config', 'props-ins.yml'))
+        self.schema = ICDC_Schema([
+            os.path.join(test_dir, 'data', 'icdc-model.yml'),
+            os.path.join(test_dir, 'data', 'icdc-model-props.yml')
+        ], props)
+        config = BentoConfig(os.path.join(os.path.dirname(test_dir), 'config', 'config.ini'))
         self.processor = FileLoader('', self.driver, self.schema, config, 'ming-icdc-file-loader', 'Final/Data_loader/Manifests')
         self.loader = DataLoader(self.driver, self.schema)
         self.file_list = [
-            "data/Dataset/COP-program.txt",
-            "data/Dataset/NCATS-COP01-case.txt",
-            "data/Dataset/NCATS-COP01-diagnosis.txt",
-            "data/Dataset/NCATS-COP01_cohort_file.txt",
-            "data/Dataset/NCATS-COP01_study_file.txt"
+            os.path.join(test_dir, "data", "Dataset", "COP-program.txt"),
+            os.path.join(test_dir, "data", "Dataset", "NCATS-COP01-case.txt"),
+            os.path.join(test_dir, "data", "Dataset", "NCATS-COP01-diagnosis.txt"),
+            os.path.join(test_dir, "data", "Dataset", "NCATS-COP01_cohort_file.txt"),
+            os.path.join(test_dir, "data", "Dataset", "NCATS-COP01_study_file.txt")
         ]
 
     def test_join_path(self):
