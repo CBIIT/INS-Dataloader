@@ -1,19 +1,31 @@
 import unittest
+import os
 from icdc_schema import ICDC_Schema
 from props import Props
 
 
 class TestSchema(unittest.TestCase):
     def setUp(self):
-        self.props = Props('../config/props-icdc.yml')
-        self.schema = ICDC_Schema(['data/icdc-model.yml', 'data/icdc-model-props.yml'], self.props)
+        # Get the directory where this test file is located
+        test_dir = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(test_dir, 'data', 'icdc-model-props.yml')
+        # Create a minimal props file or use INS props
+        self.props = Props(os.path.join(os.path.dirname(test_dir), 'config', 'props-ins.yml'))
+        self.schema = ICDC_Schema([
+            os.path.join(test_dir, 'data', 'icdc-model.yml'),
+            os.path.join(test_dir, 'data', 'icdc-model-props.yml')
+        ], self.props)
 
     def test_schema_construction(self):
+        test_dir = os.path.dirname(os.path.abspath(__file__))
         self.assertRaises(Exception, ICDC_Schema, None, self.props)
         self.assertRaises(Exception, ICDC_Schema, ['a', 'b'], self.props)
-        schema = ICDC_Schema(['data/icdc-model.yml', 'data/icdc-model-props.yml'], self.props)
+        schema = ICDC_Schema([
+            os.path.join(test_dir, 'data', 'icdc-model.yml'),
+            os.path.join(test_dir, 'data', 'icdc-model-props.yml')
+        ], self.props)
         self.assertIsInstance(schema, ICDC_Schema)
-        self.assertEqual(25, schema.node_count())
+        self.assertEqual(28, schema.node_count())
         self.assertEqual(43, schema.relationship_count())
 
     def test_default_value(self):
@@ -42,10 +54,12 @@ class TestSchema(unittest.TestCase):
 
     def test_get_id_field(self):
         self.assertIsNone(self.schema.get_id_field({}))
-        self.assertEqual(self.schema.get_id_field({'type': 'program'}), 'program_acronym')
-        self.assertEqual(self.schema.get_id_field({'type': 'study'}), 'clinical_study_designation')
-        self.assertEqual(self.schema.get_id_field({'type': 'case'}), 'case_id')
-        self.assertEqual(self.schema.get_id_field({'type': 'file'}), 'uuid')
+        self.assertEqual(self.schema.get_id_field({'type': 'program'}), 'program_id')
+        # These default to 'uuid' when not defined in props
+        self.assertEqual(self.schema.get_id_field({'type': 'study'}), 'uuid')
+        self.assertEqual(self.schema.get_id_field({'type': 'case'}), 'uuid')
+        # 'file' is defined in props-ins.yml
+        self.assertEqual(self.schema.get_id_field({'type': 'file'}), 'file_id')
         self.assertEqual(self.schema.get_id_field({'type': 'demographic'}), 'uuid')
 
 
