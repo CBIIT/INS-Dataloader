@@ -2,6 +2,8 @@
 This is the documentation index for the NCI ICDC/CTDC Data Loader
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f4d5afb8403642dbab917cb4aa4ef47d)](https://www.codacy.com/manual/FNLCR_2/icdc-dataloader?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=CBIIT/icdc-dataloader&amp;utm_campaign=Badge_Grade)
+[![Coverage Status](https://coveralls.io/repos/github/CBIIT/INS-Dataloader/badge.svg)](https://coveralls.io/github/CBIIT/INS-Dataloader)
+[![Test](https://github.com/CBIIT/INS-Dataloader/actions/workflows/test.yml/badge.svg)](https://github.com/CBIIT/INS-Dataloader/actions/workflows/test.yml)
 
 ## Module List
 The NCI ICDC/CTDC Data Loader includes multiple data loading modules:
