@@ -6,6 +6,16 @@ Settings:
   mapping.total_fields.limit: 2000
   max_ngram_diff: 30
   analysis:
+    tokenizer:
+      ngram_tokenizer:
+        type: "ngram"
+        min_gram: 3
+        max_gram: 30
+        token_chars:
+          - "letter"
+          - "digit"
+          - "symbol"
+          - "punctuation"
     filter:
       my_filter:
         type: "ngram"
@@ -20,6 +30,11 @@ Settings:
       keyword_analyzer:
         type: "custom"
         tokenizer: "keyword"
+        filter:
+          - "lowercase"
+      ngram_analyzer:
+        type: "custom"
+        tokenizer: "ngram_tokenizer"
         filter:
           - "lowercase"
       standard_analyzer:
@@ -844,8 +859,9 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
-            search_analyzer: keyword_analyzer
+            analyzer: ngram_analyzer
+            # analyzer: standard_analyzer
+            # search_analyzer: keyword_analyzer
       experimental_approaches: # not required
         type: keyword
         fields:
