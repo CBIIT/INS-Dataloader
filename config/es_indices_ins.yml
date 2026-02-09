@@ -862,6 +862,9 @@ Indices:
             analyzer: ngram_analyzer
             # analyzer: standard_analyzer
             # search_analyzer: keyword_analyzer
+      description_search:
+        type: text
+        analyzer: ngram_analyzer
       experimental_approaches: # not required
         type: keyword
         fields:
@@ -1065,6 +1068,10 @@ Indices:
           ELSE d.dataset_year_enrollment_started
         END AS dataset_year_enrollment_started,
         d.description AS description,
+        apoc.text.replace(
+          apoc.text.replace(d.description, '<a[^>]*>', ''),
+          '</a>', ''
+        ) AS description_search,
         d.experimental_approaches AS experimental_approaches,
         d.dataset_source_id AS dataset_source_id,
         d.dataset_source_url AS dataset_source_url,
