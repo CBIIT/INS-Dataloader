@@ -1074,10 +1074,7 @@ Indices:
           ELSE d.dataset_year_enrollment_started
         END AS dataset_year_enrollment_started,
         d.description AS description,
-        apoc.text.replace(
-          apoc.text.replace(d.description, '<a[^>]*>', ''),
-          '</a>', ''
-        ) AS description_anchorless,
+        apoc.text.replace(d.description, '(?s)<[^>]*>', '') AS description_anchorless,
         d.experimental_approaches AS experimental_approaches,
         d.dataset_source_id AS dataset_source_id,
         d.dataset_source_url AS dataset_source_url,
