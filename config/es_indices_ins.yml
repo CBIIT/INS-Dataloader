@@ -6,6 +6,16 @@ Settings:
   mapping.total_fields.limit: 2000
   max_ngram_diff: 30
   analysis:
+    tokenizer:
+      ngram_tokenizer:
+        type: "ngram"
+        min_gram: 3
+        max_gram: 30
+        token_chars:
+          - "letter"
+          - "digit"
+          - "symbol"
+          - "punctuation"
     filter:
       my_filter:
         type: "ngram"
@@ -20,6 +30,11 @@ Settings:
       keyword_analyzer:
         type: "custom"
         tokenizer: "keyword"
+        filter:
+          - "lowercase"
+      ngram_analyzer:
+        type: "custom"
+        tokenizer: "ngram_tokenizer"
         filter:
           - "lowercase"
       standard_analyzer:
@@ -806,7 +821,7 @@ Indices:
         fields:
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       dataset_title_sort:
         type: keyword
@@ -824,7 +839,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       dataset_year_enrollment_ended:
         type: integer
@@ -844,7 +859,17 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      description_anchorless: # Only property that has anchor tags, so far
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       experimental_approaches: # not required
         type: keyword
@@ -854,7 +879,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       dataset_source_id:
         type: keyword
@@ -864,7 +889,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       dataset_source_url:
         type: keyword
@@ -874,7 +899,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       institute: # not required
         type: keyword
@@ -884,7 +909,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       PI_name: # list
         type: keyword
@@ -894,7 +919,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       GPA: # list
         type: keyword
@@ -910,7 +935,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       dataset_pmid: # list
         type: keyword
@@ -920,7 +945,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       funding_source: # list
         type: keyword
@@ -930,7 +955,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       release_date:
         type: date
@@ -943,7 +968,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       assay_method: # list
         type: keyword
@@ -953,7 +978,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       study_type: # list
         type: keyword
@@ -963,7 +988,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       primary_disease: # list
         type: keyword
@@ -973,7 +998,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       participant_count:
         type: integer
@@ -993,7 +1018,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       related_genes: # list
         type: keyword
@@ -1003,7 +1028,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       related_diseases: # list
         type: keyword
@@ -1013,7 +1038,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       related_terms: # list
         type: keyword
@@ -1023,7 +1048,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
     cypher_query: >
       MATCH (d:dataset)
@@ -1049,6 +1074,7 @@ Indices:
           ELSE d.dataset_year_enrollment_started
         END AS dataset_year_enrollment_started,
         d.description AS description,
+        apoc.text.replace(d.description, '(?s)<[^>]*>', '') AS description_anchorless,
         d.experimental_approaches AS experimental_approaches,
         d.dataset_source_id AS dataset_source_id,
         d.dataset_source_url AS dataset_source_url,
@@ -1088,6 +1114,7 @@ Indices:
         dataset_year_enrollment_ended,
         dataset_year_enrollment_started,
         description,
+        description_anchorless,
         experimental_approaches,
         dataset_source_id,
         dataset_source_url,
