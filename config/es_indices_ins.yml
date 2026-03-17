@@ -1071,10 +1071,9 @@ Indices:
           WHEN '' THEN NULL
           ELSE d.dataset_minimum_age_at_baseline
         END AS dataset_minimum_age_at_baseline,
-        //d.dataset_storage_distribution AS dataset_storage_distribution,
-        CASE d.experimental_approaches
+        CASE d.dataset_storage_distribution
           WHEN '' THEN NULL
-          ELSE d.experimental_approaches
+          ELSE d.dataset_storage_distribution
         END AS dataset_storage_distribution,
         d.dataset_title AS dataset_title,
         apoc.text.regreplace(apoc.text.clean(d.dataset_title), '[^\\p{Alpha}0-9]', '') AS dataset_title_sort, // clean() applies lowercase
