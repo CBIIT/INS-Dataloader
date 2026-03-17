@@ -23,7 +23,7 @@ Properties:
     TBD: String
 
   id_fields:
-    dataset: dataset_source_id
+    dataset: dataset_uuid
     file: file_id
     grant: grant_id
     program: program_id
