@@ -816,6 +816,16 @@ Indices:
         fields:
           sort:
             type: integer
+      dataset_storage_distribution:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
       dataset_title:
         type: keyword
         fields:
@@ -1061,6 +1071,10 @@ Indices:
           WHEN '' THEN NULL
           ELSE d.dataset_minimum_age_at_baseline
         END AS dataset_minimum_age_at_baseline,
+        CASE d.dataset_storage_distribution
+          WHEN '' THEN NULL
+          ELSE d.dataset_storage_distribution
+        END AS dataset_storage_distribution,
         d.dataset_title AS dataset_title,
         apoc.text.regreplace(apoc.text.clean(d.dataset_title), '[^\\p{Alpha}0-9]', '') AS dataset_title_sort, // clean() applies lowercase
         d.dataset_uuid AS dataset_uuid,
@@ -1107,6 +1121,7 @@ Indices:
       RETURN
         dataset_maximum_age_at_baseline,
         dataset_minimum_age_at_baseline,
+        dataset_storage_distribution,
         dataset_title,
         dataset_title_sort,
         dataset_uuid,
