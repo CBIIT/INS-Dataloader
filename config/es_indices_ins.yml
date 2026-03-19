@@ -1154,7 +1154,7 @@ Indices:
   - index_name: files
     type: neo4j
     mapping:
-      dataset_source_id: # Identifies the dataset in lieu of dataset_uuid, for now
+      dataset_uuid: # Foreign key for dataset
         type: keyword
         fields:
           sort:
@@ -1227,7 +1227,7 @@ Indices:
     cypher_query: >
       MATCH (f:file)-[:files_of_dataset]->(d:dataset)
       WITH
-        d.dataset_source_id AS dataset_source_id,
+        d.dataset_uuid AS dataset_uuid,
         CASE d.dataset_source_repo
           WHEN 'CTD² Network' THEN 'CTD2'
           ELSE d.dataset_source_repo
@@ -1241,7 +1241,7 @@ Indices:
         f.file_url AS file_url,
         f.access_level AS access_level
       RETURN
-        dataset_source_id,
+        dataset_uuid,
         file_url_repo_prefix,
         file_id,
         file_name,
