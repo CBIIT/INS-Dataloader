@@ -6,6 +6,16 @@ Settings:
   mapping.total_fields.limit: 2000
   max_ngram_diff: 30
   analysis:
+    tokenizer:
+      ngram_tokenizer:
+        type: "ngram"
+        min_gram: 3
+        max_gram: 30
+        token_chars:
+          - "letter"
+          - "digit"
+          - "symbol"
+          - "punctuation"
     filter:
       my_filter:
         type: "ngram"
@@ -20,6 +30,11 @@ Settings:
       keyword_analyzer:
         type: "custom"
         tokenizer: "keyword"
+        filter:
+          - "lowercase"
+      ngram_analyzer:
+        type: "custom"
+        tokenizer: "ngram_tokenizer"
         filter:
           - "lowercase"
       standard_analyzer:
@@ -801,12 +816,22 @@ Indices:
         fields:
           sort:
             type: integer
+      dataset_storage_distribution:
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
       dataset_title:
         type: keyword
         fields:
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       dataset_title_sort:
         type: keyword
@@ -824,7 +849,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       dataset_year_enrollment_ended:
         type: integer
@@ -844,7 +869,17 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      description_anchorless: # Only property that has anchor tags, so far
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       experimental_approaches: # not required
         type: keyword
@@ -854,7 +889,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       dataset_source_id:
         type: keyword
@@ -864,7 +899,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       dataset_source_url:
         type: keyword
@@ -874,7 +909,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       institute: # not required
         type: keyword
@@ -884,7 +919,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       PI_name: # list
         type: keyword
@@ -894,7 +929,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       GPA: # list
         type: keyword
@@ -910,7 +945,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       dataset_pmid: # list
         type: keyword
@@ -920,7 +955,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       funding_source: # list
         type: keyword
@@ -930,7 +965,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       release_date:
         type: date
@@ -943,7 +978,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       assay_method: # list
         type: keyword
@@ -953,7 +988,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       study_type: # list
         type: keyword
@@ -963,7 +998,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       primary_disease: # list
         type: keyword
@@ -973,7 +1008,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       participant_count:
         type: integer
@@ -993,7 +1028,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       related_genes: # list
         type: keyword
@@ -1003,7 +1038,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       related_diseases: # list
         type: keyword
@@ -1013,7 +1048,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
       related_terms: # list
         type: keyword
@@ -1023,7 +1058,7 @@ Indices:
             normalizer: lowercase
           search:
             type: text
-            analyzer: standard_analyzer
+            analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
     cypher_query: >
       MATCH (d:dataset)
@@ -1036,6 +1071,10 @@ Indices:
           WHEN '' THEN NULL
           ELSE d.dataset_minimum_age_at_baseline
         END AS dataset_minimum_age_at_baseline,
+        CASE d.dataset_storage_distribution
+          WHEN '' THEN NULL
+          ELSE d.dataset_storage_distribution
+        END AS dataset_storage_distribution,
         d.dataset_title AS dataset_title,
         apoc.text.regreplace(apoc.text.clean(d.dataset_title), '[^\\p{Alpha}0-9]', '') AS dataset_title_sort, // clean() applies lowercase
         d.dataset_uuid AS dataset_uuid,
@@ -1049,6 +1088,7 @@ Indices:
           ELSE d.dataset_year_enrollment_started
         END AS dataset_year_enrollment_started,
         d.description AS description,
+        apoc.text.replace(d.description, '(?s)<[^>]*>', '') AS description_anchorless,
         d.experimental_approaches AS experimental_approaches,
         d.dataset_source_id AS dataset_source_id,
         d.dataset_source_url AS dataset_source_url,
@@ -1081,6 +1121,7 @@ Indices:
       RETURN
         dataset_maximum_age_at_baseline,
         dataset_minimum_age_at_baseline,
+        dataset_storage_distribution,
         dataset_title,
         dataset_title_sort,
         dataset_uuid,
@@ -1088,6 +1129,7 @@ Indices:
         dataset_year_enrollment_ended,
         dataset_year_enrollment_started,
         description,
+        description_anchorless,
         experimental_approaches,
         dataset_source_id,
         dataset_source_url,
@@ -1112,7 +1154,7 @@ Indices:
   - index_name: files
     type: neo4j
     mapping:
-      dataset_source_id: # Identifies the dataset in lieu of dataset_uuid, for now
+      dataset_uuid: # Foreign key for dataset
         type: keyword
         fields:
           sort:
@@ -1185,7 +1227,7 @@ Indices:
     cypher_query: >
       MATCH (f:file)-[:files_of_dataset]->(d:dataset)
       WITH
-        d.dataset_source_id AS dataset_source_id,
+        d.dataset_uuid AS dataset_uuid,
         CASE d.dataset_source_repo
           WHEN 'CTD² Network' THEN 'CTD2'
           ELSE d.dataset_source_repo
@@ -1199,7 +1241,7 @@ Indices:
         f.file_url AS file_url,
         f.access_level AS access_level
       RETURN
-        dataset_source_id,
+        dataset_uuid,
         file_url_repo_prefix,
         file_id,
         file_name,
