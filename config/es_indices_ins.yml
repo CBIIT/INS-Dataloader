@@ -1255,18 +1255,18 @@ Indices:
   - index_name: resources
     type: neo4j
     mapping:
-      resource_uuid: # resource internal identifier
+      resource_uuid: # required; resource internal identifier
         type: keyword
         fields:
           sort:
             type: keyword
             normalizer: lowercase
-      # resource_source_id:  # not displayed
+      # resource_source_id:  # not required; not displayed
       #   type: integer
       #   fields:
       #     sort:
       #       type: integer
-      resource_title:
+      resource_title: # required
         type: keyword
         fields:
           search:
@@ -1275,7 +1275,7 @@ Indices:
             search_analyzer: keyword_analyzer
       resource_title_sort:
         type: keyword
-      resource_short_description:
+      resource_short_description: # not required
         type: keyword
         fields:
           sort:
@@ -1295,7 +1295,7 @@ Indices:
             type: text
             analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
-      resource_source_url:
+      resource_source_url: # required
         type: keyword
         fields:
           sort:
@@ -1305,7 +1305,7 @@ Indices:
             type: text
             analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
-      resource_tool_type: # list
+      resource_tool_type: # required; list
         type: keyword
         fields:
           sort:
@@ -1315,7 +1315,7 @@ Indices:
             type: text
             analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
-      resource_tool_subtype: # list
+      resource_tool_subtype: # not required; list
         type: keyword
         fields:
           sort:
@@ -1325,7 +1325,7 @@ Indices:
             type: text
             analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
-      resource_research_area: # list
+      resource_research_area: # required; list
         type: keyword
         fields:
           sort:
@@ -1335,7 +1335,7 @@ Indices:
             type: text
             analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
-      resource_research_type: # list
+      resource_research_type: # not required; list
         type: keyword
         fields:
           sort:
@@ -1345,7 +1345,7 @@ Indices:
             type: text
             analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
-      resource_access:
+      resource_access: # not required
         type: keyword
         fields:
           sort:
@@ -1355,7 +1355,7 @@ Indices:
             type: text
             analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
-      resource_doc: # list
+      resource_doc: # not required; list
         type: keyword
         fields:
           sort:
@@ -1365,7 +1365,7 @@ Indices:
             type: text
             analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
-      resource_poc_name: # list
+      resource_poc_name: # not required; list
         type: keyword
         fields:
           sort:
@@ -1375,7 +1375,7 @@ Indices:
             type: text
             analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
-      resource_poc_email: # list
+      resource_poc_email: # not required; list
         type: keyword
         fields:
           sort:
@@ -1385,7 +1385,7 @@ Indices:
             type: text
             analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
-      resource_full_description:
+      resource_full_description: # not required
         type: keyword
         fields:
           sort:
@@ -1406,92 +1406,68 @@ Indices:
             analyzer: ngram_analyzer
             search_analyzer: keyword_analyzer
     cypher_query: >
-      MATCH (d:dataset)
+      MATCH (r:resource)
       WITH
-        CASE d.dataset_maximum_age_at_baseline
+        r.resource_uuid AS resource_uuid,
+        r.resource_title AS resource_title,
+        apoc.text.regreplace(apoc.text.clean(r.resource_title), '[^\\p{Alpha}0-9]', '') AS resource_title_sort, // clean() applies lowercase
+        CASE r.resource_short_description
           WHEN '' THEN NULL
-          ELSE d.dataset_maximum_age_at_baseline
-        END AS dataset_maximum_age_at_baseline,
-        CASE d.dataset_minimum_age_at_baseline
+          ELSE r.resource_short_description
+        END AS resource_short_description,
+        CASE r.resource_short_description
           WHEN '' THEN NULL
-          ELSE d.dataset_minimum_age_at_baseline
-        END AS dataset_minimum_age_at_baseline,
-        CASE d.dataset_storage_distribution
+          ELSE apoc.text.replace(r.resource_short_description, '(?s)<[^>]*>', '')
+        END AS resource_short_description_anchorless,
+        r.resource_source_url AS resource_source_url,
+        apoc.text.split(r.resource_tool_type, ';') AS resource_tool_type,
+        CASE r.resource_tool_subtype
+          WHEN '' THEN []
+          ELSE apoc.text.split(r.resource_tool_subtype, ';')
+        END AS resource_tool_subtype,
+        apoc.text.split(r.resource_research_area, ';') AS resource_research_area,
+        CASE r.resource_research_type
+          WHEN '' THEN []
+          ELSE apoc.text.split(r.resource_research_type, ';')
+        END AS resource_research_type,
+        CASE r.resource_access
           WHEN '' THEN NULL
-          ELSE d.dataset_storage_distribution
-        END AS dataset_storage_distribution,
-        d.dataset_title AS dataset_title,
-        apoc.text.regreplace(apoc.text.clean(d.dataset_title), '[^\\p{Alpha}0-9]', '') AS dataset_title_sort, // clean() applies lowercase
-        d.dataset_uuid AS dataset_uuid,
-        d.dataset_source_repo AS dataset_source_repo,
-        CASE d.dataset_year_enrollment_ended
+          ELSE r.resource_access
+        END AS resource_access,
+        CASE r.resource_doc
+          WHEN '' THEN []
+          ELSE apoc.text.split(r.resource_doc, ';')
+        END AS resource_doc,
+        CASE r.resource_poc_name
+          WHEN '' THEN []
+          ELSE apoc.text.split(r.resource_poc_name, ';')
+        END AS resource_poc_name,
+        CASE r.resource_poc_email
+          WHEN '' THEN []
+          ELSE apoc.text.split(r.resource_poc_email, ';')
+        END AS resource_poc_email,
+        CASE r.resource_full_description
           WHEN '' THEN NULL
-          ELSE d.dataset_year_enrollment_ended
-        END AS dataset_year_enrollment_ended,
-        CASE d.dataset_year_enrollment_started
+          ELSE r.resource_full_description
+        END AS resource_full_description,
+        CASE r.resource_full_description
           WHEN '' THEN NULL
-          ELSE d.dataset_year_enrollment_started
-        END AS dataset_year_enrollment_started,
-        d.description AS description,
-        apoc.text.replace(d.description, '(?s)<[^>]*>', '') AS description_anchorless,
-        d.experimental_approaches AS experimental_approaches,
-        d.dataset_source_id AS dataset_source_id,
-        d.dataset_source_url AS dataset_source_url,
-        d.institute AS institute,
-        d.PI_name AS PI_name,
-        d.GPA AS GPA,
-        d.dataset_doc AS dataset_doc,
-        d.dataset_pmid AS dataset_pmid,
-        d.funding_source AS funding_source,
-        CASE d.release_date
-          WHEN '' THEN NULL
-          ELSE d.release_date
-        END AS release_date,
-        d.limitations_for_reuse AS limitations_for_reuse,
-        d.assay_method AS assay_method,
-        d.study_type AS study_type,
-        d.primary_disease AS primary_disease,
-        CASE d.participant_count
-          WHEN '' THEN NULL
-          ELSE d.participant_count
-        END AS participant_count,
-        CASE d.sample_count
-          WHEN '' THEN NULL
-          ELSE d.sample_count
-        END AS sample_count,
-        d.study_links AS study_links,
-        d.related_genes AS related_genes,
-        d.related_diseases AS related_diseases,
-        d.related_terms AS related_terms
+          ELSE apoc.text.replace(r.resource_full_description, '(?s)<[^>]*>', '')
+        END AS resource_full_description_anchorless
       RETURN
-        dataset_maximum_age_at_baseline,
-        dataset_minimum_age_at_baseline,
-        dataset_storage_distribution,
-        dataset_title,
-        dataset_title_sort,
-        dataset_uuid,
-        dataset_source_repo,
-        dataset_year_enrollment_ended,
-        dataset_year_enrollment_started,
-        description,
-        description_anchorless,
-        experimental_approaches,
-        dataset_source_id,
-        dataset_source_url,
-        institute,
-        PI_name,
-        GPA,
-        dataset_doc,
-        dataset_pmid,
-        funding_source,
-        release_date,
-        limitations_for_reuse,
-        assay_method,
-        study_type,
-        primary_disease,
-        participant_count,
-        sample_count,
-        study_links,
-        related_genes,
-        related_diseases,
-        related_terms;
+        resource_uuid,
+        resource_title,
+        resource_title_sort,
+        resource_short_description,
+        resource_short_description_anchorless,
+        resource_source_url,
+        resource_tool_type,
+        resource_tool_subtype,
+        resource_research_area,
+        resource_research_type,
+        resource_access,
+        resource_doc,
+        resource_poc_name,
+        resource_poc_email,
+        resource_full_description,
+        resource_full_description_anchorless;
