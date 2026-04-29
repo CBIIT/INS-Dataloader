@@ -1410,7 +1410,7 @@ Indices:
       WITH
         r.resource_uuid AS resource_uuid,
         r.resource_title AS resource_title,
-        apoc.text.regreplace(apoc.text.clean(r.resource_title), '[^\\p{Alpha}0-9]', '') AS resource_title_sort, // clean() applies lowercase
+        apoc.text.regreplace(apoc.text.clean(r.resource_title), '[^\\p{Alpha}0-9]', '') AS resource_title_sort, /* clean() applies lowercase */
         CASE r.resource_short_description
           WHEN '' THEN NULL
           ELSE r.resource_short_description
