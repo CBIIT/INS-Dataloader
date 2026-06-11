@@ -1248,3 +1248,226 @@ Indices:
         file_type,
         file_url,
         access_level;
+
+  # Resources
+  # String fields are keyword for display, with subfields for sorting and searching
+  # Numeric and date fields are indexed as-is
+  - index_name: resources
+    type: neo4j
+    mapping:
+      resource_uuid: # required; resource internal identifier
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+      # resource_source_id:  # not required; not displayed
+      #   type: integer
+      #   fields:
+      #     sort:
+      #       type: integer
+      resource_title: # required
+        type: keyword
+        fields:
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      resource_title_sort:
+        type: keyword
+      resource_short_description: # not required
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      resource_short_description_anchorless: # HTML tags removed
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      resource_source_url: # required
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      resource_tool_type: # required; list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      resource_tool_subtype: # not required; list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      resource_research_area: # required; list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      resource_research_type: # not required; list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      resource_access: # not required
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      resource_doc: # not required; list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      resource_poc_name: # not required; list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      resource_poc_email: # not required; list
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      resource_full_description: # not required
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+      resource_full_description_anchorless: # HTML tags removed
+        type: keyword
+        fields:
+          sort:
+            type: keyword
+            normalizer: lowercase
+          search:
+            type: text
+            analyzer: ngram_analyzer
+            search_analyzer: keyword_analyzer
+    cypher_query: >
+      MATCH (r:resource)
+      WITH
+        r.resource_uuid AS resource_uuid,
+        r.resource_title AS resource_title,
+        apoc.text.regreplace(apoc.text.clean(r.resource_title), '[^\\p{Alpha}0-9]', '') AS resource_title_sort, /* clean() applies lowercase */
+        CASE r.resource_short_description
+          WHEN '' THEN NULL
+          ELSE r.resource_short_description
+        END AS resource_short_description,
+        CASE r.resource_short_description
+          WHEN '' THEN NULL
+          ELSE apoc.text.replace(r.resource_short_description, '(?s)<[^>]*>', '')
+        END AS resource_short_description_anchorless,
+        r.resource_source_url AS resource_source_url,
+        apoc.text.split(r.resource_tool_type, ';') AS resource_tool_type,
+        CASE r.resource_tool_subtype
+          WHEN '' THEN []
+          ELSE apoc.text.split(r.resource_tool_subtype, ';')
+        END AS resource_tool_subtype,
+        apoc.text.split(r.resource_research_area, ';') AS resource_research_area,
+        CASE r.resource_research_type
+          WHEN '' THEN []
+          ELSE apoc.text.split(r.resource_research_type, ';')
+        END AS resource_research_type,
+        CASE r.resource_access
+          WHEN '' THEN NULL
+          ELSE r.resource_access
+        END AS resource_access,
+        CASE r.resource_doc
+          WHEN '' THEN []
+          ELSE apoc.text.split(r.resource_doc, ';')
+        END AS resource_doc,
+        CASE r.resource_poc_name
+          WHEN '' THEN []
+          ELSE apoc.text.split(r.resource_poc_name, ';')
+        END AS resource_poc_name,
+        CASE r.resource_poc_email
+          WHEN '' THEN []
+          ELSE apoc.text.split(r.resource_poc_email, ';')
+        END AS resource_poc_email,
+        CASE r.resource_full_description
+          WHEN '' THEN NULL
+          ELSE r.resource_full_description
+        END AS resource_full_description,
+        CASE r.resource_full_description
+          WHEN '' THEN NULL
+          ELSE apoc.text.replace(r.resource_full_description, '(?s)<[^>]*>', '')
+        END AS resource_full_description_anchorless
+      RETURN
+        resource_uuid,
+        resource_title,
+        resource_title_sort,
+        resource_short_description,
+        resource_short_description_anchorless,
+        resource_source_url,
+        resource_tool_type,
+        resource_tool_subtype,
+        resource_research_area,
+        resource_research_type,
+        resource_access,
+        resource_doc,
+        resource_poc_name,
+        resource_poc_email,
+        resource_full_description,
+        resource_full_description_anchorless;
