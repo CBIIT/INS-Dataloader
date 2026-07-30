@@ -73,7 +73,7 @@ Indices:
         type: integer
       num_resources:
         type: integer
-    # Using OPTIONAL MATCH so that we get all Programs
+    # Using independent subqueries so each count is computed once without row multiplication
     cypher_query: >
       CALL {
         MATCH (d:dataset)
